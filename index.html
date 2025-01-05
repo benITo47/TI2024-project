@@ -40,8 +40,10 @@
         <div id="gridControls" style="display: none">
           <label for="gridAlgorithmSelect">Select Algorithm:</label>
           <select id="gridAlgorithmSelect">
-            <option value="astar">A* Algorithm</option>
+            <option value="BFS">Breadth First Search</option>
+            <option value="DFS">Depth First Search</option>
             <option value="dijkstra">Dijkstra's Algorithm</option>
+            <option value="astar">A* Algorithm</option>
             <!-- Future algorithms can be added here -->
           </select>
           <button id="generateMazeBtn">Generate Maze</button>
@@ -69,14 +71,17 @@
 
     <!-- Script for generating the canvas -->
 
+    <script src="script/utils.js"></script>
     <script src="script/cellClass.js"></script>
     <!-- External Scripts Section -->
-    <script src="script/grid.js"></script>
 
     <script src="script/bfs.js"></script>
+    <script src="script/dfs.js"></script>
+    <script src="script/minHeap.js"></script>
+    <script src="script/djikstra.js"></script>
     <!-- Script for generating the grid -->
     <script src="script/canvas.js"></script>
-
+    <script src="script/grid.js"></script>
     <script src="script/logic.js"></script>
     <!-- Link to the new logic.js -->
   </body>

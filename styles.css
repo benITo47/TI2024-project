@@ -1,5 +1,4 @@
-/* styles.css */
-
+/
 /* General body styling */
 body {
   margin: 0;
@@ -9,6 +8,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  background-color: #f2f2f2; /* Light background for the whole page */
 }
 
 /* Navbar styling */
@@ -75,6 +75,7 @@ h1 {
   text-align: center;
   margin-bottom: 20px;
   font-size: 2em;
+  color: #333; /* Dark text color for the header */
 }
 
 /* Controls section */
@@ -99,6 +100,7 @@ h1 {
   transition:
     background-color 0.3s,
     color 0.3s;
+  background-color: #fff; /* Ensure background is consistent */
 }
 
 .controls button {
@@ -109,6 +111,16 @@ h1 {
 
 .controls button:hover {
   background-color: #0056b3;
+}
+
+.controls select {
+  background-color: #f1f1f1; /* Light background for select inputs */
+}
+
+.controls-disabled {
+  background-color: #c7c7c7; /* Gray background for disabled state */
+  cursor: not-allowed;
+  opacity: 0.5; /* Visual cue of disabled state */
 }
 
 /* Placeholder canvas styling */
@@ -131,39 +143,7 @@ h1 {
   margin: 20px auto;
 }
 
-#grid {
-  table-layout: fixed; /* Ensures cells fit within the table and remain uniform */
-  width: 100%;
-  height: 100%;
-  border-collapse: collapse; /* Prevents gaps between cells */
-  margin: 0 auto;
-}
-
-.grid-row {
-  display: table-row;
-}
-
-.cell {
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  box-sizing: border-box;
-  display: table-cell; /* Make it behave like a table cell */
-  vertical-align: top;
-  background: white;
-}
-
-.cell-start {
-  background-color: green;
-}
-
-.cell-target {
-  background-color: red;
-}
-
-.cell-wall {
-  background-color: black;
-}
-
-/* Responsive styling */
+/* Responsive layout for smaller screens */
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
@@ -182,4 +162,63 @@ h1 {
   .controls {
     align-items: stretch;
   }
+}
+
+/* Styling for grid */
+#grid {
+  table-layout: fixed;
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.grid-row {
+  display: table-row;
+}
+
+.cell {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  display: table-cell;
+  vertical-align: top;
+  background: white;
+  transition: background-color 0.1s ease-in-out;
+}
+
+.cell-wall {
+  background-color: black;
+}
+
+.cell-current {
+  background-color: rgba(52, 10, 250, 0.8);
+}
+
+.cell-visited {
+  background-color: rgba(0, 100, 250, 1);
+}
+
+.cell-path {
+  background-color: yellow;
+}
+
+.cell-start {
+  background-color: green;
+}
+
+.cell-target {
+  background-color: red;
+}
+
+/* Hover effects for grid cells */
+.cell:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+/* Specific styling for the disabled controls (added directly to class when disabled) */
+.disabled {
+  background-color: #c7c7c7 !important;
+  cursor: not-allowed;
+  opacity: 0.5;
 }

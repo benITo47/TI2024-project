@@ -190,12 +190,19 @@ function handleMouseUp() {
 function moveStartCell(newCell) {
   if (newCell.isWall || newCell.isTarget) return;
 
+  // Remove the start class from the old start cell
   startCell.htmlRef.classList.remove("cell-start");
   startCell.isStart = false;
 
   newCell.htmlRef.classList.add("cell-start");
   newCell.isStart = true;
+
   startCell = newCell;
+
+  if (running !== "") {
+    clearGrid(true);
+    visualizeSelectedAlgorithmInRealTime();
+  }
 }
 
 function moveTargetCell(newCell) {
@@ -206,5 +213,11 @@ function moveTargetCell(newCell) {
 
   newCell.htmlRef.classList.add("cell-target");
   newCell.isTarget = true;
+
   targetCell = newCell;
+
+  if (running !== "") {
+    clearGrid(true); // Clear the grid but keep walls
+    visualizeSelectedAlgorithmInRealTime();
+  }
 }

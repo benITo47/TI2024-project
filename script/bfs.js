@@ -9,18 +9,12 @@ function executeBFS() {
   let pathfindMap = new Map();
   pathfindMap.set(startCell, null);
 
-  let directions = [
-    [-1, 0],
-    [1, 0],
-    [0, -1],
-    [0, 1],
-  ];
   setTimeout(() => {
-    BFS(cells, startCell, targetCell, queue, pathfindMap, directions);
+    BFS(cells, startCell, targetCell, queue, pathfindMap);
   }, 10);
 }
 
-function BFS(cellGrid, startCell, targetCell, queue, pathfindMap, directions) {
+function BFS(cellGrid, start, target, queue, pathfindMap) {
   let size = 0;
   let currentCell = null;
 
@@ -38,15 +32,16 @@ function BFS(cellGrid, startCell, targetCell, queue, pathfindMap, directions) {
       setTimeout(() => {
         htmlCell.classList.remove("cell-current");
         htmlCell.classList.add("cell-visited");
-      }, 1000);
+      }, 200);
 
       if (currentCell === targetCell) {
         findAndDrawPath(pathfindMap, currentCell);
         return;
       }
       for (let j = 0; j < directions.length; j++) {
-        let row = htmlCell.dataset["row"] + directions[j][0];
-        let col = htmlCell.dataset["col"] + directions[j][1];
+        let row = parseInt(htmlCell.dataset["row"]) + directions[j][0];
+        let col = parseInt(htmlCell.dataset["col"]) + directions[j][1];
+
         if (
           cellGrid[row] &&
           cellGrid[row][col] &&
@@ -54,31 +49,57 @@ function BFS(cellGrid, startCell, targetCell, queue, pathfindMap, directions) {
           !pathfindMap.has(cellGrid[row][col])
         ) {
           queue.push(cellGrid[row][col]);
-          pathfindMap.set(grid[row][col], currentCell);
+          pathfindMap.set(cellGrid[row][col], currentCell);
         }
       }
     }
     setTimeout(() => {
-      BFS(cellGrid, startCell, targetCell, queue, pathfindMap, directions);
-    }, 30);
-  } else {
-    //GUI MANIPULATION TO ADD : )
+      BFS(cellGrid, start, target, queue, pathfindMap);
+    }, 80);
   }
 }
 
-function findAndDrawPath(pathfindMap, currentCell) {
-  let path = [];
-  while (currentCell !== null) {
-    path.unshift(currentCell);
-    currentCell = pathfindMap.get(currentCell);
+function BFSinRealTime(cellGrid, start, target) {
+  if (!cellGrid || !start || !target) {
+    return;
   }
-  setTimeout(drawPath, 0, path);
-}
 
-function drawPath(path) {
-  for (let i = 0; i < path.length; i++) {
-    const currentCell = path[i];
-    currentCell.htmlRef.classList.add("cell-path");
-    setTimeout(45);
+  let queue = [];
+  queue.push(start);
+  let pathfindMap = new Map();
+  pathfindMap.set(start, null);
+
+  while (queue.length > 0) {
+    let currentCell = queue.shift();
+
+    if (currentCell.isWall) {
+      continue; // Skip walls
+    }
+
+    // Mark the cell as visited
+    currentCell.htmlRef.classList.add("cell-visited");
+
+    if (currentCell === target) {
+      findAndDrawPathRealTime(pathfindMap, currentCell);
+      return; // Path found
+    }
+
+    for (let i = 0; i < directions.length; i++) {
+      let row = parseInt(currentCell.htmlRef.dataset["row"]) + directions[i][0];
+      let col = parseInt(currentCell.htmlRef.dataset["col"]) + directions[i][1];
+
+      // Check bounds and if cell has already been visited
+      if (
+        cellGrid[row] &&
+        cellGrid[row][col] &&
+        !cellGrid[row][col].isWall &&
+        !pathfindMap.has(cellGrid[row][col])
+      ) {
+        queue.push(cellGrid[row][col]);
+        pathfindMap.set(cellGrid[row][col], currentCell);
+      }
+    }
   }
+
+  console.log("No path found");
 }
