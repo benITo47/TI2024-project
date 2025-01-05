@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <title>Pathfinding Visualizer</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Header Section: Navigation Bar -->
+    <header>
+      <nav class="navbar">
+        <div class="logo">Pathfinding Visualizer</div>
+        <ul class="nav-links">
+          <!-- Mode Selection Dropdown -->
+          <li>
+            <label for="modeSelect" class="nav-label">Mode:</label>
+            <select id="modeSelect" class="nav-select">
+              <option value="grid">Grid</option>
+              <option value="graph">Graph</option>
+            </select>
+          </li>
+          <!-- Login/Register and Logout Links -->
+          <li><a href="#" id="loginBtn">Login/Register</a></li>
+          <li><a href="#" id="logoutBtn" style="display: none">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content Section -->
+    <main>
+      <!-- Title / Introduction -->
+      <h1>Siemanko tu bedziemy wizualizowac to gowno : )</h1>
+
+      <!-- Control Panel Section -->
+      <div class="controls">
+        <!-- Grid Mode Controls -->
+        <div id="gridControls" style="display: none">
+          <label for="gridAlgorithmSelect">Select Algorithm:</label>
+          <select id="gridAlgorithmSelect">
+            <option value="astar">A* Algorithm</option>
+            <option value="dijkstra">Dijkstra's Algorithm</option>
+            <!-- Future algorithms can be added here -->
+          </select>
+          <button id="generateMazeBtn">Generate Maze</button>
+          <button id="clearGridButton">Clear Grid</button>
+          <button id="clearPathButton">Clear path</button>
+          <button id="visualizeGridButton">Visualize</button>
+        </div>
+
+        <!-- Graph Mode Controls -->
+        <div id="graphControls" style="display: none">
+          <label for="graphAlgorithmSelect">Select Algorithm:</label>
+          <select id="graphAlgorithmSelect">
+            <option value="astar">A* Algorithm</option>
+            <option value="dijkstra">Dijkstra's Algorithm</option>
+            <!-- Future algorithms can be added here -->
+          </select>
+          <button id="visualizeGraphBtn">Visualize</button>
+        </div>
+      </div>
+
+      <!-- Grid or Canvas Placeholder Section -->
+      <!-- This is where the grid or canvas will be dynamically injected -->
+      <div id="workplaceContainer"></div>
+    </main>
+
+    <!-- Script for generating the canvas -->
+
+    <script src="script/cellClass.js"></script>
+    <!-- External Scripts Section -->
+    <script src="script/grid.js"></script>
+
+    <script src="script/bfs.js"></script>
+    <!-- Script for generating the grid -->
+    <script src="script/canvas.js"></script>
+
+    <script src="script/logic.js"></script>
+    <!-- Link to the new logic.js -->
+  </body>
+</html>

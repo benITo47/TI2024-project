@@ -1,0 +1,185 @@
+/* styles.css */
+
+/* General body styling */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Navbar styling */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  color: #fff;
+  padding: 15px 20px;
+}
+
+.navbar .logo {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.navbar .nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+.navbar .nav-links li {
+  margin-left: 20px;
+}
+
+.navbar .nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1em;
+  transition: color 0.3s;
+}
+
+.navbar .nav-links a:hover {
+  color: #00bcd4;
+}
+
+/* Styling for select dropdown and label */
+.navbar .nav-label {
+  margin-right: 10px;
+  font-size: 1em;
+  color: #fff;
+}
+
+.navbar .nav-select {
+  padding: 5px;
+  font-size: 1em;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Main content styling */
+main {
+  max-width: 95vw;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2em;
+}
+
+/* Controls section */
+.controls {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.controls label {
+  font-weight: bold;
+}
+
+.controls select,
+.controls button {
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.controls button {
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.controls button:hover {
+  background-color: #0056b3;
+}
+
+/* Placeholder canvas styling */
+.canvas-placeholder {
+  display: block;
+  margin: 20px auto;
+  border: 1px solid #333;
+  background-color: #f9f9f9;
+}
+
+#workplaceContainer {
+  width: 90vw; /* Ensure it fills the width of the page */
+  height: 80vh; /* Ensure it fills the height of the page */
+  display: flex;
+  justify-content: center; /* Centers the grid or canvas horizontally */
+  align-items: center; /* Centers the grid or canvas vertically */
+  position: relative;
+  background-color: #f4f4f4; /* Light background to visualize workspace */
+  overflow: hidden; /* Prevents any overflow of grid/canvas */
+  margin: 20px auto;
+}
+
+#grid {
+  table-layout: fixed; /* Ensures cells fit within the table and remain uniform */
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse; /* Prevents gaps between cells */
+  margin: 0 auto;
+}
+
+.grid-row {
+  display: table-row;
+}
+
+.cell {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  display: table-cell; /* Make it behave like a table cell */
+  vertical-align: top;
+  background: white;
+}
+
+.cell-start {
+  background-color: green;
+}
+
+.cell-target {
+  background-color: red;
+}
+
+.cell-wall {
+  background-color: black;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar .nav-links li {
+    margin: 10px 0;
+  }
+
+  .controls {
+    align-items: stretch;
+  }
+}
