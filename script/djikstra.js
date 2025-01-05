@@ -4,6 +4,7 @@ function executeDijkstra() {
     return;
   }
 
+  clearGrid(true);
   let distanceMap = new Map(); // Map to store distances of cells
   let pathfindMap = new Map(); // Map to reconstruct the path
   let visited = new Set(); // Set to track visited cells
@@ -33,6 +34,8 @@ function Dijkstra(
 ) {
   if (priorityQueue.isEmpty()) {
     console.log("No path found!");
+
+    toggleControls(false);
     return;
   }
 
@@ -64,11 +67,9 @@ function Dijkstra(
   setTimeout(() => {
     htmlCell.classList.remove("cell-current");
     htmlCell.classList.add("cell-visited");
-  }, 90);
+  }, 200);
 
-  // Check if the target is reached
-  if (currentCell.isTarget) {
-    console.log("Path found!");
+  if (currentCell === target) {
     findAndDrawPath(pathfindMap, currentCell);
     return;
   }
@@ -86,7 +87,8 @@ function Dijkstra(
       !visited.has(cellGrid[row][col])
     ) {
       let neighbor = cellGrid[row][col];
-      let newDistance = distanceMap.get(currentCell) + 1; // Uniform weight is 1 for every step
+      let weight = neighbor.weight || 1; // Use the cell's weight, defaulting to 1 if not set
+      let newDistance = distanceMap.get(currentCell) + weight;
 
       // Update the distance map if a shorter path is found
       if (newDistance < distanceMap.get(neighbor)) {
@@ -110,4 +112,70 @@ function Dijkstra(
       ),
     10,
   );
+}
+
+function DijkstraInRealTime(cellGrid, start, target) {
+  if (!cellGrid || !start || !target) {
+    toggleControls(false);
+    console.error("Grid, start, or target cells are missing.");
+    return;
+  }
+
+  let distanceMap = new Map();
+  let pathfindMap = new Map();
+  let visited = new Set();
+  let priorityQueue = new MinHeap();
+
+  for (let row of cellGrid) {
+    for (let cell of row) {
+      distanceMap.set(cell, Infinity);
+    }
+  }
+  distanceMap.set(start, 0);
+
+  pathfindMap.set(start, null);
+  priorityQueue.insert({ cell: start, distance: 0 });
+
+  while (!priorityQueue.isEmpty()) {
+    let current = priorityQueue.extractMin();
+    let currentCell = current.cell;
+
+    if (visited.has(currentCell)) {
+      continue;
+    }
+
+    visited.add(currentCell);
+    let htmlCell = currentCell.htmlRef;
+
+    htmlCell.classList.add("cell-visited");
+
+    if (currentCell === target) {
+      findAndDrawPathRealTime(pathfindMap, currentCell);
+      return;
+    }
+
+    for (let i = 0; i < directions.length; i++) {
+      let row = parseInt(currentCell.htmlRef.dataset["row"]) + directions[i][0];
+      let col = parseInt(currentCell.htmlRef.dataset["col"]) + directions[i][1];
+
+      if (
+        cellGrid[row] &&
+        cellGrid[row][col] &&
+        !cellGrid[row][col].isWall &&
+        !visited.has(cellGrid[row][col])
+      ) {
+        let neighbor = cellGrid[row][col];
+        let weight = neighbor.weight || 1; // Use the cell's weight, defaulting to 1 if not set
+        let newDistance = distanceMap.get(currentCell) + weight;
+
+        if (newDistance < distanceMap.get(neighbor)) {
+          distanceMap.set(neighbor, newDistance);
+          pathfindMap.set(neighbor, currentCell);
+          priorityQueue.insert({ cell: neighbor, distance: newDistance });
+        }
+      }
+    }
+  }
+
+  toggleControls(false);
 }

@@ -57,7 +57,7 @@ function handleLogout() {
 function initializeMode() {
   const modeSelect = document.getElementById("modeSelect");
   if (modeSelect.value === "grid") {
-    document.getElementById("gridControls").style.display = "block";
+    document.getElementById("gridControls").style.display = "inline-block";
     generateGrid();
   } else if (modeSelect.value === "graph") {
     document.getElementById("graphControls").style.display = "block";
@@ -132,19 +132,15 @@ function visualizeSelectedAlgorithmInRealTime() {
       break;
 
     case "dijkstra":
-      executeDijkstra();
+      DijkstraInRealTime(cells, startCell, targetCell);
       break;
 
     case "astar":
-      executeAStar();
+      AStarInRealTime(cells, startCell, targetCell);
       break;
 
     default:
       toggleControls(false);
       return;
   }
-}
-
-function executeAStar() {
-  console.log("Executing A* Algorithm...");
 }

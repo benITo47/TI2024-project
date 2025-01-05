@@ -7,7 +7,7 @@ let cells = [];
 let startCell = null;
 let targetCell = null;
 let grid = null;
-let cellSize = 15;
+let cellSize = 25;
 
 let mouseState = {
   isPressed: false, // Is the mouse currently pressed
@@ -27,7 +27,7 @@ function debounce(func, delay) {
   };
 }
 
-function generateGrid() {
+function generateGrid(size = 50) {
   const gridContainer = document.querySelector("#workplaceContainer");
   gridContainer.innerHTML = ""; // Clear previous grid
 
@@ -36,9 +36,12 @@ function generateGrid() {
   grid.id = "grid";
   gridContainer.appendChild(grid);
 
-  // Calculate rows and columns based on container dimensions
-  const rows = Math.floor(gridContainer.clientHeight / cellSize);
-  const columns = Math.floor(gridContainer.clientWidth / cellSize);
+  cellSize =
+    Math.min(gridContainer.clientWidth, gridContainer.clientHeight) / size;
+
+  // Initialize the grid's rows and columns
+  const rows = size;
+  const columns = size;
 
   // Randomly place start and target cells
   const startRowIndex = Math.floor(Math.random() * rows);
@@ -92,8 +95,9 @@ function generateGrid() {
   grid.appendChild(documentFragment);
 
   // Set grid size to match container dimensions
-  grid.style.width = `${gridContainer.clientWidth}px`;
-  grid.style.height = `${gridContainer.clientHeight}px`;
+  // Set the grid size to fit the container's size
+  grid.style.width = `${columns * cellSize}px`;
+  grid.style.height = `${rows * cellSize}px`;
 
   // Attach mouse event listeners
   grid.addEventListener("mousedown", handleMouseDown);
@@ -117,6 +121,10 @@ function clearGrid(keepWalls = false) {
         } else {
           cells[i][j].isWall = false;
         }
+      } else if (cells[i][j].weight > 1 && keepWalls) {
+        cells[i][j].htmlRef.classList.add("cell-weight");
+      } else {
+        cells[i][j].weight = 1;
       }
     }
   }
@@ -134,6 +142,13 @@ function toggleWall(cell, isWall) {
   cell.htmlRef.classList.toggle("cell-wall", isWall);
 }
 
+function toggleWeight(cell, isWeighted) {
+  if (cell.isStart || cell.isTarget || cell.isWall) return;
+
+  cell.weight = isWeighted ? 50 : 1;
+  cell.htmlRef.classList.toggle("cell-weight", isWeighted);
+}
+
 function handleMouseDown(event) {
   const cell = getCellFromEvent(event); // Helper to get cell from event.target
   if (!cell) return;
@@ -147,13 +162,25 @@ function handleMouseDown(event) {
     mouseState.action = "drag-target";
     mouseState.previousCell = cell;
   } else if (event.button === 0) {
-    // Left click
-    mouseState.action = "add-wall";
-    toggleWall(cell, true); // Add wall
+    if (event.shiftKey) {
+      // Shift + Left Click
+      mouseState.action = "add-weight";
+      toggleWeight(cell, true);
+    } else {
+      // Regular Left Click
+      mouseState.action = "add-wall";
+      toggleWall(cell, true);
+    }
   } else if (event.button === 2) {
-    // Right click
-    mouseState.action = "remove-wall";
-    toggleWall(cell, false); // Remove wall
+    if (event.shiftKey) {
+      // Shift + Right Click
+      mouseState.action = "remove-weight";
+      toggleWeight(cell, false);
+    } else {
+      // Regular Right Click
+      mouseState.action = "remove-wall";
+      toggleWall(cell, false);
+    }
   }
 }
 
@@ -175,6 +202,12 @@ function handleMouseMove(event) {
       break;
     case "remove-wall":
       toggleWall(cell, false);
+      break;
+    case "remove-weight":
+      toggleWeight(cell, false);
+      break;
+    case "add-weight":
+      toggleWeight(cell, true);
       break;
   }
 

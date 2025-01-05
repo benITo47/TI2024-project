@@ -4,6 +4,7 @@ function executeDFS() {
     return;
   }
 
+  clearGrid(true);
   let stack = [startCell]; // Initialize the stack with the start cell
   let pathfindMap = new Map(); // Map to track the path
   let visited = new Set(); // Set to track visited cells
@@ -16,6 +17,7 @@ function executeDFS() {
 function DFS(cellGrid, target, stack, pathfindMap, visited) {
   if (stack.length === 0) {
     console.log("No path found!");
+    toggleControls(false);
     return;
   }
 
@@ -38,7 +40,7 @@ function DFS(cellGrid, target, stack, pathfindMap, visited) {
   }, 90);
 
   // Check if the target is reached
-  if (currentCell.isTarget) {
+  if (currentCell === target) {
     console.log("Path found!");
     findAndDrawPath(pathfindMap, currentCell);
     return;
@@ -116,4 +118,6 @@ function DFSinRealTime(cellGrid, start, target) {
   }
 
   console.log("No path found in real-time!");
+
+  toggleControls(false);
 }

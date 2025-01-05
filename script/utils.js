@@ -66,5 +66,4 @@ function drawPathRealTime(path) {
     const currentCell = path[i];
     currentCell.htmlRef.classList.add("cell-path");
   }
-  toggleControls(false);
 }

@@ -6,6 +6,7 @@ class Cell {
     isStart = false,
     isTarget = false,
     isWall = false,
+    weight = 1,
   ) {
     this.htmlRef = htmlRef;
     this.row = row;
@@ -13,5 +14,6 @@ class Cell {
     this.isStart = isStart;
     this.isTarget = isTarget;
     this.isWall = isWall;
+    this.weight = weight;
   }
 }

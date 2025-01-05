@@ -1,14 +1,13 @@
-/
 /* General body styling */
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: "Roboto", sans-serif;
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: #f2f2f2; /* Light background for the whole page */
+  background-color: #f7f7f7; /* Light background for the whole page */
 }
 
 /* Navbar styling */
@@ -16,9 +15,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #333;
+  background-color: #007bff; /* Soft blue background */
   color: #fff;
   padding: 15px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .navbar .logo {
@@ -44,7 +44,7 @@ body {
 }
 
 .navbar .nav-links a:hover {
-  color: #00bcd4;
+  color: #00bcd4; /* Lighter cyan on hover */
 }
 
 /* Styling for select dropdown and label */
@@ -83,7 +83,7 @@ h1 {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
   align-items: flex-start;
 }
 
@@ -94,23 +94,23 @@ h1 {
 .controls select,
 .controls button {
   padding: 10px;
-  font-size: 1em;
+  font-size: 0.6em;
   border: 1px solid #ddd;
   border-radius: 4px;
   transition:
     background-color 0.3s,
     color 0.3s;
-  background-color: #fff; /* Ensure background is consistent */
+  background-color: #fff;
 }
 
 .controls button {
-  background-color: #007bff;
-  color: #fff;
+  background-color: #4caf50; /* Soft green for buttons */
+  color: white;
   cursor: pointer;
 }
 
 .controls button:hover {
-  background-color: #0056b3;
+  background-color: #45a049; /* Darker green on hover */
 }
 
 .controls select {
@@ -118,9 +118,9 @@ h1 {
 }
 
 .controls-disabled {
-  background-color: #c7c7c7; /* Gray background for disabled state */
+  background-color: #c7c7c7;
   cursor: not-allowed;
-  opacity: 0.5; /* Visual cue of disabled state */
+  opacity: 0.5;
 }
 
 /* Placeholder canvas styling */
@@ -131,16 +131,84 @@ h1 {
   background-color: #f9f9f9;
 }
 
+.grid-size-buttons {
+}
+
+/* Grid container styling */
 #workplaceContainer {
-  width: 90vw; /* Ensure it fills the width of the page */
-  height: 80vh; /* Ensure it fills the height of the page */
+  width: 90vw;
+  height: 80vh;
   display: flex;
-  justify-content: center; /* Centers the grid or canvas horizontally */
-  align-items: center; /* Centers the grid or canvas vertically */
+  justify-content: center;
+  align-items: center;
   position: relative;
-  background-color: #f4f4f4; /* Light background to visualize workspace */
-  overflow: hidden; /* Prevents any overflow of grid/canvas */
+  background-color: #e6e6e6; /* Light grey background */
+  overflow: hidden;
   margin: 20px auto;
+}
+
+/* Styling for the grid */
+#grid {
+  table-layout: fixed;
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+/* Make sure grid rows are treated as table rows */
+.grid-row {
+  display: table-row;
+}
+
+.cell {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  display: table-cell;
+  vertical-align: top;
+  background: white;
+  transition: background-color 0.1s ease-in-out;
+}
+
+.cell-wall {
+  background-color: #424242; /* Dark gray for walls */
+}
+
+.cell-weight {
+  border: 2px solid #000;
+}
+
+.cell-current {
+  background-color: rgba(255, 174, 0, 0.8); /* Orange for current position */
+}
+
+.cell-visited {
+  background-color: rgba(0, 123, 255, 0.9); /* Blue for visited cells */
+}
+
+.cell-path {
+  background-color: #ffeb3b; /* Yellow for path */
+}
+
+.cell-start {
+  background-color: #4caf50; /* Green for start */
+}
+
+.cell-target {
+  background-color: #f44336; /* Red for target */
+}
+
+/* Hover effects for grid cells */
+.cell:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+/* Specific styling for the disabled controls */
+.disabled {
+  background-color: #c7c7c7 !important;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* Responsive layout for smaller screens */
@@ -162,63 +230,4 @@ h1 {
   .controls {
     align-items: stretch;
   }
-}
-
-/* Styling for grid */
-#grid {
-  table-layout: fixed;
-  width: 100%;
-  height: 100%;
-  border-collapse: collapse;
-  margin: 0 auto;
-}
-
-.grid-row {
-  display: table-row;
-}
-
-.cell {
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  box-sizing: border-box;
-  display: table-cell;
-  vertical-align: top;
-  background: white;
-  transition: background-color 0.1s ease-in-out;
-}
-
-.cell-wall {
-  background-color: black;
-}
-
-.cell-current {
-  background-color: rgba(52, 10, 250, 0.8);
-}
-
-.cell-visited {
-  background-color: rgba(0, 100, 250, 1);
-}
-
-.cell-path {
-  background-color: yellow;
-}
-
-.cell-start {
-  background-color: green;
-}
-
-.cell-target {
-  background-color: red;
-}
-
-/* Hover effects for grid cells */
-.cell:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-}
-
-/* Specific styling for the disabled controls (added directly to class when disabled) */
-.disabled {
-  background-color: #c7c7c7 !important;
-  cursor: not-allowed;
-  opacity: 0.5;
 }

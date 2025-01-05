@@ -56,6 +56,8 @@ function BFS(cellGrid, start, target, queue, pathfindMap) {
     setTimeout(() => {
       BFS(cellGrid, start, target, queue, pathfindMap);
     }, 80);
+  } else {
+    toggleControls(false);
   }
 }
 
@@ -102,4 +104,6 @@ function BFSinRealTime(cellGrid, start, target) {
   }
 
   console.log("No path found");
+
+  toggleControls(false);
 }
