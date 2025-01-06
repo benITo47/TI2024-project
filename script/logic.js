@@ -123,7 +123,6 @@ function toggleLoginState(isLoggedIn) {
 function initializeMode() {
   const mode = document.getElementById("modeSelect").value;
   updateControls(mode);
-  updateWorkingConrainer(mode);
 }
 
 function handleModeChange(event) {

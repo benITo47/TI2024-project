@@ -1,6 +1,8 @@
 let isDragging = false;
 let draggedVertex = null;
 
+let graph;
+
 function generateCanvas() {
   const container = document.querySelector("#workplaceContainer");
   container.innerHTML = "";
@@ -11,10 +13,10 @@ function generateCanvas() {
   const graph = createGraph();
 
   // Set up mouse event listeners
-  setupMouseEvents(canvas, graph);
+  setupMouseEvents(canvas);
 
   // Start animation loop
-  animate(canvas, ctx, graph);
+  animate(canvas, ctx);
 }
 
 function createCanvas(width, height) {
@@ -26,7 +28,7 @@ function createCanvas(width, height) {
 }
 
 function createGraph() {
-  const graph = new Graph();
+  graph = new Graph();
 
   // Add vertices
   graph.addVertex("A", 100, 100);
@@ -80,11 +82,9 @@ function createGraph() {
   graph.addEdge("P", "S", 4);
   graph.addEdge("Q", "S", 2);
   graph.addEdge("R", "S", 5);
-
-  return graph;
 }
 
-function setupMouseEvents(canvas, graph) {
+function setupMouseEvents(canvas) {
   // Mouse down event
   canvas.addEventListener("mousedown", mouseDownHandler);
 
@@ -101,7 +101,7 @@ function mouseDownHandler(e) {
   const mousePosition = getMousePosition(e, canvas);
 
   // Check if a vertex is clicked
-  draggedVertex = getVertexAtPosition(mousePosition, graph);
+  draggedVertex = getVertexAtPosition(mousePosition);
   if (draggedVertex) {
     isDragging = true;
   }
@@ -133,7 +133,7 @@ function getMousePosition(e, canvas) {
   };
 }
 
-function getVertexAtPosition(mousePosition, graph) {
+function getVertexAtPosition(mousePosition) {
   for (let vertex of graph.getVertices()) {
     const dx = mousePosition.x - vertex.x;
     const dy = mousePosition.y - vertex.y;
@@ -144,7 +144,7 @@ function getVertexAtPosition(mousePosition, graph) {
   return null;
 }
 
-function animate(canvas, ctx, graph) {
+function animate(canvas, ctx) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   graph.applySpringForces();
@@ -152,5 +152,5 @@ function animate(canvas, ctx, graph) {
   graph.updatePositions();
 
   graph.drawGraph(ctx);
-  requestAnimationFrame(() => animate(canvas, ctx, graph));
+  requestAnimationFrame(() => animate(canvas, ctx));
 }
