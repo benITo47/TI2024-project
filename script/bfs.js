@@ -2,7 +2,7 @@ function executeBFS() {
   if (!cells || !startCell || !targetCell) {
     return;
   }
-
+  isAnimating = true;
   clearGrid(true);
   let queue = [];
   queue.push(startCell);
@@ -58,6 +58,7 @@ function BFS(cellGrid, start, target, queue, pathfindMap) {
     }, 80);
   } else {
     toggleControls(false);
+    isAnimating = false;
   }
 }
 

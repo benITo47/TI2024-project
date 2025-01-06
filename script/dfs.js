@@ -5,6 +5,8 @@ function executeDFS() {
   }
 
   clearGrid(true);
+
+  isAnimating = true;
   let stack = [startCell]; // Initialize the stack with the start cell
   let pathfindMap = new Map(); // Map to track the path
   let visited = new Set(); // Set to track visited cells
@@ -18,6 +20,8 @@ function DFS(cellGrid, target, stack, pathfindMap, visited) {
   if (stack.length === 0) {
     console.log("No path found!");
     toggleControls(false);
+
+    isAnimating = false;
     return;
   }
 

@@ -26,39 +26,10 @@
     </header>
 
     <!-- Main Content Section -->
+
     <main>
-      <!-- Title / Introduction -->
-
       <!-- Control Panel Section -->
-      <div class="controls">
-        <div id="gridControls" class="control-panel" style="display: none">
-          <label for="gridAlgorithmSelect">Select Algorithm:</label>
-          <select id="gridAlgorithmSelect">
-            <option value="BFS">Breadth First Search</option>
-            <option value="DFS">Depth First Search</option>
-            <option value="dijkstra">Dijkstra's Algorithm</option>
-            <option value="astar">A* Algorithm</option>
-          </select>
-          <button id="generateMazeBtn">Generate Maze</button>
-          <button id="clearGridButton">Clear Grid</button>
-          <button id="clearPathButton">Clear path</button>
-          <button id="visualizeGridButton">Visualize</button>
-          <div class="grid-size-buttons">
-            <button id="generate50x50">50 x 50 grid</button>
-            <button id="generate70x70">70 x 70 grid</button>
-            <button id="generate100x100">100 x 100 grid</button>
-          </div>
-        </div>
-
-        <div id="graphControls" class="control-panel" style="display: none">
-          <label for="graphAlgorithmSelect">Select Algorithm:</label>
-          <select id="graphAlgorithmSelect">
-            <option value="astar">A* Algorithm</option>
-            <option value="dijkstra">Dijkstra's Algorithm</option>
-          </select>
-          <button id="visualizeGraphBtn">Visualize</button>
-        </div>
-      </div>
+      <div id="controlsContainer" class="controls sticky"></div>
 
       <!-- Grid or Canvas Placeholder Section -->
       <div id="workplaceContainer"></div>
@@ -72,6 +43,7 @@
     <script src="script/djikstra.js"></script>
     <script src="script/astar.js"></script>
     <script src="script/canvas.js"></script>
+    <script src="script/maze.js"></script>
     <script src="script/grid.js"></script>
     <script src="script/logic.js"></script>
   </body>

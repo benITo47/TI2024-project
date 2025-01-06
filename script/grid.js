@@ -1,7 +1,6 @@
 // Refactored generateGrid function
 
 document.addEventListener("DOMContentLoaded", generateGrid);
-window.addEventListener("resize", debounce(generateGrid, 300));
 
 let cells = [];
 let startCell = null;
@@ -15,19 +14,7 @@ let mouseState = {
   previousCell: null, // Last cell interacted with (for drag logic)
 };
 
-function debounce(func, delay) {
-  let timeout;
-  return function () {
-    const context = this;
-    const args = arguments;
-    clearTimeout(timeout);
-    timeout = setTimeout(function () {
-      func.apply(context, args);
-    }, delay);
-  };
-}
-
-function generateGrid(size = 50) {
+function generateGrid(size = 70) {
   const gridContainer = document.querySelector("#workplaceContainer");
   gridContainer.innerHTML = ""; // Clear previous grid
 
@@ -106,25 +93,34 @@ function generateGrid(size = 50) {
   grid.addEventListener("contextmenu", (event) => event.preventDefault()); // Disable context menu
 }
 
-function clearGrid(keepWalls = false) {
-  console.log("clear grid has been called");
+function clearGrid(keepWalls = false, keepPoints = true) {
   for (let i = 0; i < cells.length; i++) {
     for (let j = 0; j < cells[0].length; j++) {
       cells[i][j].htmlRef.className = "cell";
       if (cells[i][j].isStart) {
-        cells[i][j].htmlRef.classList.add("cell-start");
+        if (keepPoints) {
+          cells[i][j].htmlRef.classList.add("cell-start");
+        } else {
+          cells[i][j].isStart = false;
+        }
       } else if (cells[i][j].isTarget) {
-        cells[i][j].htmlRef.classList.add("cell-target");
+        if (keepPoints) {
+          cells[i][j].htmlRef.classList.add("cell-target");
+        } else {
+          cells[i][j].isTarget = false;
+        }
       } else if (cells[i][j].isWall) {
         if (keepWalls) {
           cells[i][j].htmlRef.classList.add("cell-wall");
         } else {
           cells[i][j].isWall = false;
         }
-      } else if (cells[i][j].weight > 1 && keepWalls) {
-        cells[i][j].htmlRef.classList.add("cell-weight");
-      } else {
-        cells[i][j].weight = 1;
+      } else if (cells[i][j].weight > 1) {
+        if (keepPoints) {
+          cells[i][j].htmlRef.classList.add("cell-weight");
+        } else {
+          cells[i][j].weight = 1;
+        }
       }
     }
   }
@@ -151,7 +147,7 @@ function toggleWeight(cell, isWeighted) {
 
 function handleMouseDown(event) {
   const cell = getCellFromEvent(event); // Helper to get cell from event.target
-  if (!cell) return;
+  if (!cell || isAnimating) return;
 
   mouseState.isPressed = true;
 
@@ -185,7 +181,7 @@ function handleMouseDown(event) {
 }
 
 function handleMouseMove(event) {
-  if (!mouseState.isPressed) return;
+  if (!mouseState.isPressed || isAnimating) return;
 
   const cell = getCellFromEvent(event);
   if (!cell || cell === mouseState.previousCell) return;

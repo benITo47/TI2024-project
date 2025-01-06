@@ -1,146 +1,237 @@
-// Application Logic
-
 document.addEventListener("DOMContentLoaded", initializeApp);
-const height =
-  document.body.clientHeight ||
-  document.documentElement.clientHeight ||
-  window.innerHeight;
 
-const width =
-  document.body.clientWidth ||
-  document.documentElement.clientWidth ||
-  window.innerWidth;
-
+// Global Constants
+const height = window.innerHeight;
+const width = window.innerWidth;
 let running = ""; // Keeps track of the currently running algorithm
+let isAnimating = false;
+let selectedGridSize = 70; // Default grid size
 
-// Function to initialize the application
+// Initialize the application
 function initializeApp() {
-  setupEventListeners(); // Set up all event listeners
-  initializeMode(); // Initialize mode-specific UI and logic
+  setupEventListeners();
+  initializeMode();
+  markSelectedGridSize();
+  generateGrid(selectedGridSize);
 }
 
-// Function to set up all event listeners
+// Utility: Toggle Button Disabled State
+function toggleButtonState(buttonId, state) {
+  const button = document.getElementById(buttonId);
+  if (button) {
+    button.disabled = state;
+    button.style.opacity = state ? "0.5" : "1"; // Grayed out when disabled
+    button.style.pointerEvents = state ? "none" : "auto"; // Prevent interactions
+  }
+}
+
+// Utility: Mark selected grid size button
+function markSelectedGridSize() {
+  const gridSizeButtons = ["generate50x50", "generate70x70", "generate100x100"];
+  gridSizeButtons.forEach((id) => {
+    const button = document.getElementById(id);
+    if (button) {
+      button.classList.toggle(
+        "active",
+        id === `generate${selectedGridSize}x${selectedGridSize}`,
+      );
+    }
+  });
+}
+
+// Set up all event listeners
 function setupEventListeners() {
-  document
-    .querySelector("#clearGridButton")
-    .addEventListener("click", () => clearGrid());
-  document
-    .querySelector("#clearPathButton")
-    .addEventListener("click", () => clearGrid(true));
+  const controlsContainer = document.getElementById("controlsContainer");
 
-  document
-    .querySelector("#visualizeGridButton")
-    .addEventListener("click", () => visualizeSelectedAlgorithm());
-
+  // Handle mode changes
   const modeSelect = document.getElementById("modeSelect");
-  modeSelect.addEventListener("change", handleModeChange);
+  if (modeSelect) {
+    modeSelect.addEventListener("change", handleModeChange);
+  }
 
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
+  // Handle login/logout
+  document.getElementById("loginBtn")?.addEventListener("click", handleLogin);
+  document.getElementById("logoutBtn")?.addEventListener("click", handleLogout);
 
-  loginBtn.addEventListener("click", handleLogin);
-  logoutBtn.addEventListener("click", handleLogout);
+  // Delegate events for dynamically added buttons
+  controlsContainer.addEventListener("click", (event) => {
+    const { id } = event.target;
+
+    const buttonMapping = {
+      generateMazeBtn: () => executeMazeGenerator(),
+      clearGridButton: () => clearGrid(),
+      clearPathButton: () => clearGrid(true),
+      visualizeGridButton: () => visualizeSelectedAlgorithm(),
+      generate50x50: () => updateGridSize(50),
+      generate70x70: () => updateGridSize(70),
+      generate100x100: () => updateGridSize(100),
+      visualizeGraphBtn: () => visualizeSelectedAlgorithm(),
+    };
+
+    if (buttonMapping[id]) {
+      buttonMapping[id]();
+    }
+  });
+
+  // Listen for changes in algorithm selection
+  controlsContainer.addEventListener("change", (event) => {
+    if (
+      event.target.id === "gridAlgorithmSelect" ||
+      event.target.id === "graphAlgorithmSelect"
+    ) {
+      resetRunningState();
+      clearGrid(true);
+    }
+  });
 }
 
+// Update the selected grid size
+function updateGridSize(size) {
+  selectedGridSize = size;
+  generateGrid(size);
+  resetRunningState();
+  markSelectedGridSize();
+}
+
+// Reset running state
+function resetRunningState() {
+  running = "";
+  console.log("Running state reset.");
+}
+
+// Login/Logout handlers
 function handleLogin() {
   alert("Login/Register clicked");
-  document.getElementById("loginBtn").style.display = "none";
-  document.getElementById("logoutBtn").style.display = "block";
+  toggleLoginState(true);
 }
 
 function handleLogout() {
   alert("Logged out");
-  document.getElementById("loginBtn").style.display = "block";
-  document.getElementById("logoutBtn").style.display = "none";
+  toggleLoginState(false);
+}
+
+function toggleLoginState(isLoggedIn) {
+  document.getElementById("loginBtn").style.display = isLoggedIn
+    ? "none"
+    : "block";
+  document.getElementById("logoutBtn").style.display = isLoggedIn
+    ? "block"
+    : "none";
 }
 
 function initializeMode() {
-  const modeSelect = document.getElementById("modeSelect");
-  if (modeSelect.value === "grid") {
-    document.getElementById("gridControls").style.display = "inline-block";
-    generateGrid();
-  } else if (modeSelect.value === "graph") {
-    document.getElementById("graphControls").style.display = "block";
-    generateCanvas(document.getElementById("workplaceContainer"));
-  }
+  const mode = document.getElementById("modeSelect").value;
+  updateControls(mode);
+  updateWorkingConrainer(mode);
 }
 
 function handleModeChange(event) {
   const mode = event.target.value;
-  const gridControls = document.getElementById("gridControls");
-  const graphControls = document.getElementById("graphControls");
-  const workplaceContainer = document.getElementById("workplaceContainer");
+  updateControls(mode);
+}
+
+function updateControls(mode) {
+  const controlsContainer = document.getElementById("controlsContainer");
+  controlsContainer.innerHTML = ""; // Clear existing controls
 
   if (mode === "grid") {
-    gridControls.style.display = "block";
-    graphControls.style.display = "none";
-    generateGrid(); // Call grid generation logic
+    controlsContainer.innerHTML = `
+      <label for="gridAlgorithmSelect">Select Algorithm:</label>
+      <select id="gridAlgorithmSelect">
+        <option value="BFS">Breadth First Search</option>
+        <option value="DFS">Depth First Search</option>
+        <option value="dijkstra">Dijkstra's Algorithm</option>
+        <option value="astar">A* Algorithm</option>
+      </select>
+      <button id="generateMazeBtn">Generate Maze</button>
+      <button id="clearGridButton">Clear Grid</button>
+      <button id="clearPathButton">Clear Path</button>
+      <button id="visualizeGridButton">Visualize</button>
+      <div class="grid-size-buttons">
+        <button id="generate50x50">50 x 50 Grid</button>
+        <button id="generate70x70">70 x 70 Grid</button>
+        <button id="generate100x100">100 x 100 Grid</button>
+      </div>
+    `;
+
+    markSelectedGridSize(); // Update grid size indicator
   } else if (mode === "graph") {
-    gridControls.style.display = "none";
-    graphControls.style.display = "block";
-    generateCanvas(workplaceContainer); // Call canvas generation logic
+    controlsContainer.innerHTML = `
+      <label for="graphAlgorithmSelect">Select Algorithm:</label>
+      <select id="graphAlgorithmSelect">
+        <option value="astar">A* Algorithm</option>
+        <option value="dijkstra">Dijkstra's Algorithm</option>
+      </select>
+      <button id="visualizeGraphBtn">Visualize</button>
+    `;
   }
+
+  // Reattach event listeners for the new controls
+  resetRunningState(); // Reset state when controls change
 }
+
+function updateWorkingConrainer(mode) {}
+// Visualize the selected algorithm
+
 function visualizeSelectedAlgorithm() {
-  const selectedAlgorithm = document.getElementById(
-    "gridAlgorithmSelect",
-  ).value;
+  const selectedAlgorithm =
+    document.getElementById("gridAlgorithmSelect")?.value ||
+    document.getElementById("graphAlgorithmSelect")?.value;
 
   toggleControls(true);
 
-  switch (selectedAlgorithm) {
-    case "BFS":
-      console.log("Running BFS...");
-      running = "BFS";
-      executeBFS();
-      break;
+  const algorithmMapping = {
+    BFS: executeBFS,
+    DFS: executeDFS,
+    dijkstra: executeDijkstra,
+    astar: executeAStar,
+  };
 
-    case "DFS":
-      console.log("Running DFS...");
-      running = "DFS";
-      executeDFS();
-      break;
-
-    case "dijkstra":
-      console.log("Running Dijkstra's Algorithm...");
-      running = "dijkstra";
-      executeDijkstra();
-      break;
-
-    case "astar":
-      console.log("Running A* Algorithm...");
-      running = "astar";
-      executeAStar();
-      break;
-
-    default:
-      console.error("Selected algorithm is not implemented or invalid.");
-      alert("The selected algorithm is not available.");
-      toggleControls(false);
-      return;
+  if (algorithmMapping[selectedAlgorithm]) {
+    console.log(`Running ${selectedAlgorithm}...`);
+    running = selectedAlgorithm;
+    algorithmMapping[selectedAlgorithm]();
+  } else {
+    console.error("Selected algorithm is not implemented or invalid.");
+    alert("The selected algorithm is not available.");
+    toggleControls(false);
   }
 }
 
 function visualizeSelectedAlgorithmInRealTime() {
-  switch (running) {
-    case "BFS":
-      BFSinRealTime(cells, startCell, targetCell);
-      break;
+  const selectedAlgorithm =
+    document.getElementById("gridAlgorithmSelect")?.value ||
+    document.getElementById("graphAlgorithmSelect")?.value;
 
-    case "DFS":
-      DFSinRealTime(cells, startCell, targetCell);
-      break;
+  const algorithmMapping = {
+    BFS: BFSinRealTime,
+    DFS: DFSinRealTime,
+    dijkstra: DijkstraInRealTime,
+    astar: AStarInRealTime,
+  };
 
-    case "dijkstra":
-      DijkstraInRealTime(cells, startCell, targetCell);
-      break;
-
-    case "astar":
-      AStarInRealTime(cells, startCell, targetCell);
-      break;
-
-    default:
-      toggleControls(false);
-      return;
+  if (algorithmMapping[selectedAlgorithm]) {
+    console.log(`Running ${selectedAlgorithm}...`);
+    running = selectedAlgorithm;
+    algorithmMapping[selectedAlgorithm](cells, startCell, targetCell);
+  } else {
+    console.error("Selected algorithm is not implemented or invalid.");
+    alert("The selected algorithm is not available.");
+    toggleControls(false);
   }
+}
+
+// Toggle control buttons' disabled state
+function toggleControls(disable) {
+  const buttons = [
+    "generateMazeBtn",
+    "clearGridButton",
+    "clearPathButton",
+    "visualizeGridButton",
+    "generate50x50",
+    "generate70x70",
+    "generate100x100",
+    "visualizeGraphBtn",
+  ];
+  buttons.forEach((id) => toggleButtonState(id, disable));
 }

@@ -1,233 +1,243 @@
-/* General body styling */
-body {
+/* Root Variables for Theming */
+:root {
+  --primary-color: #4caf50; /* Green for primary elements */
+  --secondary-color: #ff9800; /* Orange for secondary accents */
+  --background-color: #f4f4f9; /* Light gray for background */
+  --text-color: #333; /* Dark gray for text */
+  --border-color: #ddd; /* Light gray for borders */
+  --cell-wall-color: #444; /* Wall cell color */
+  --cell-start-color: #007bff; /* Blue for start cell */
+  --cell-target-color: #dc3545; /* Red for target cell */
+  --cell-visited-color: #81c784; /* Light green for visited cells */
+  --cell-path-color: #ffc107; /* Yellow for path */
+  --cell-weight-color: #ff4081; /* Vibrant pink for weighted cells */
+  --cell-current-color: #673ab7; /* Vibrant purple for currently visited cell */
+  --cell-border-thickness: 3px; /* Thicker border for grid cells */
+}
+
+/* Global Reset */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   font-family: "Roboto", sans-serif;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background-color: #f7f7f7; /* Light background for the whole page */
+  color: var(--text-color);
+  background-color: var(--background-color);
+  line-height: 1.6;
 }
 
-/* Navbar styling */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #007bff; /* Soft blue background */
+/* Header Section */
+header {
+  background: var(--primary-color);
   color: #fff;
-  padding: 15px 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.navbar .logo {
-  font-size: 1.5em;
-  font-weight: bold;
-}
-
-.navbar .nav-links {
-  list-style: none;
-  display: flex;
-  align-items: center;
-}
-
-.navbar .nav-links li {
-  margin-left: 20px;
-}
-
-.navbar .nav-links a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 1em;
-  transition: color 0.3s;
-}
-
-.navbar .nav-links a:hover {
-  color: #00bcd4; /* Lighter cyan on hover */
-}
-
-/* Styling for select dropdown and label */
-.navbar .nav-label {
-  margin-right: 10px;
-  font-size: 1em;
-  color: #fff;
-}
-
-.navbar .nav-select {
-  padding: 5px;
-  font-size: 1em;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-/* Main content styling */
-main {
-  max-width: 95vw;
-  margin: 20px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
+  padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 2em;
-  color: #333; /* Dark text color for the header */
-}
-
-/* Controls section */
-.controls {
-  margin-top: 20px;
+.navbar {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.controls label {
+.logo {
+  font-size: 1.5rem;
   font-weight: bold;
 }
 
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.nav-links a:hover {
+  background: var(--secondary-color);
+}
+
+/* Control Panel Section */
+
+/* Sticky Control Panel */
+.controls {
+  position: sticky;
+  top: 0;
+  background: var(--background-color);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Wraps on smaller screens */
+  gap: 1rem;
+  z-index: 1000;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Control Buttons & Select Dropdowns */
 .controls select,
 .controls button {
-  padding: 10px;
-  font-size: 0.6em;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
   transition:
-    background-color 0.3s,
-    color 0.3s;
-  background-color: #fff;
+    background 0.3s ease,
+    color 0.3s ease;
+  cursor: pointer;
+  background: #fff;
 }
 
 .controls button {
-  background-color: #4caf50; /* Soft green for buttons */
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.controls button.active {
+  background-color: #007bff;
   color: white;
-  cursor: pointer;
+  border: 2px solid #0056b3;
 }
 
 .controls button:hover {
-  background-color: #45a049; /* Darker green on hover */
+  background: var(--secondary-color);
 }
 
-.controls select {
-  background-color: #f1f1f1; /* Light background for select inputs */
+/* Responsive Design for Controls */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
-.controls-disabled {
-  background-color: #c7c7c7;
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-/* Placeholder canvas styling */
-.canvas-placeholder {
-  display: block;
-  margin: 20px auto;
-  border: 1px solid #333;
-  background-color: #f9f9f9;
-}
-
-.grid-size-buttons {
-}
-
-/* Grid container styling */
+/* Workplace Section */
 #workplaceContainer {
-  width: 90vw;
-  height: 80vh;
+  margin: 1rem auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
-  background-color: #e6e6e6; /* Light grey background */
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  max-width: 90%;
+  min-height: 90vh; /* Increased height for a larger grid container */
+}
+
+/* Grid Styling */
+table#grid {
+  border-collapse: collapse;
   margin: 20px auto;
 }
 
-/* Styling for the grid */
-#grid {
-  table-layout: fixed;
-  width: 100%;
-  height: 100%;
-  border-collapse: collapse;
-  margin: 0 auto;
+table#grid td {
+  transition:
+    background 0.3s ease,
+    transform 0.2s ease;
 }
 
-/* Make sure grid rows are treated as table rows */
-.grid-row {
-  display: table-row;
-}
-
+/* Cell Colors */
 .cell {
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  box-sizing: border-box;
-  display: table-cell;
-  vertical-align: top;
-  background: white;
-  transition: background-color 0.1s ease-in-out;
+  border: 1px solid var(--border-color); /* Thicker borders */
+  background: #fff;
 }
 
 .cell-wall {
-  background-color: #424242; /* Dark gray for walls */
+  background: var(--cell-wall-color);
 }
-
+/* NEW: Cell Weight Styling */
 .cell-weight {
-  border: 2px solid #000;
-}
-
-.cell-current {
-  background-color: rgba(255, 174, 0, 0.8); /* Orange for current position */
+  border: 2px solid black; /* Highlight with border */
 }
 
 .cell-visited {
-  background-color: rgba(0, 123, 255, 0.9); /* Blue for visited cells */
+  background: var(--cell-visited-color);
 }
 
 .cell-path {
-  background-color: #ffeb3b; /* Yellow for path */
+  background: var(--cell-path-color);
+}
+
+/* NEW: Cell Currently Visited */
+.cell-current {
+  background: var(--cell-current-color);
+  border: var(--cell-border-thickness) solid var(--cell-current-color);
+  animation: currentCellGlow 1s infinite;
 }
 
 .cell-start {
-  background-color: #4caf50; /* Green for start */
+  background: var(--cell-start-color);
+  animation: pulse 1s infinite;
 }
 
 .cell-target {
-  background-color: #f44336; /* Red for target */
+  background: var(--cell-target-color);
+  animation: pulse 1s infinite;
+}
+/* Animations */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Hover effects for grid cells */
-.cell:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  cursor: pointer;
+@keyframes currentCellGlow {
+  0% {
+    box-shadow: 0 0 10px var(--cell-current-color);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--cell-current-color);
+  }
+  100% {
+    box-shadow: 0 0 10px var(--cell-current-color);
+  }
 }
 
-/* Specific styling for the disabled controls */
-.disabled {
-  background-color: #c7c7c7 !important;
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-/* Responsive layout for smaller screens */
+/* Responsive Design */
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .navbar .nav-links {
+  .nav-links {
     flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .navbar .nav-links li {
-    margin: 10px 0;
+    gap: 0.5rem;
   }
 
   .controls {
-    align-items: stretch;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .control-panel {
+    width: 100%;
+  }
+
+  #workplaceContainer {
+    height: 60vh; /* Reduce grid container size for smaller screens */
   }
 }

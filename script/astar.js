@@ -2,6 +2,7 @@ function executeAStar() {
   if (!cells || !startCell || !targetCell) {
     return;
   }
+  isAnimating = true;
   clearGrid(true);
   let pathfindMap = new Map();
   let distanceMap = new Map();
@@ -48,6 +49,8 @@ function AStar(
   if (priorityQueue.isEmpty()) {
     console.log("No path found!");
     toggleControls(false);
+
+    isAnimating = false;
     return;
   }
 

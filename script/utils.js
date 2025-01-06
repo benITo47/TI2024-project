@@ -49,6 +49,7 @@ function drawPath(path) {
 
   setTimeout(() => {
     toggleControls(false);
+    isAnimating = false;
   }, path.length * 25);
 }
 

@@ -4,6 +4,7 @@ function executeDijkstra() {
     return;
   }
 
+  isAnimating = true;
   clearGrid(true);
   let distanceMap = new Map(); // Map to store distances of cells
   let pathfindMap = new Map(); // Map to reconstruct the path
@@ -35,6 +36,7 @@ function Dijkstra(
   if (priorityQueue.isEmpty()) {
     console.log("No path found!");
 
+    isAnimating = false;
     toggleControls(false);
     return;
   }
@@ -67,7 +69,7 @@ function Dijkstra(
   setTimeout(() => {
     htmlCell.classList.remove("cell-current");
     htmlCell.classList.add("cell-visited");
-  }, 200);
+  }, 75);
 
   if (currentCell === target) {
     findAndDrawPath(pathfindMap, currentCell);
