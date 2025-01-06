@@ -167,7 +167,7 @@ function DijkstraInRealTime(cellGrid, start, target) {
         !visited.has(cellGrid[row][col])
       ) {
         let neighbor = cellGrid[row][col];
-        let weight = neighbor.weight || 1; // Use the cell's weight, defaulting to 1 if not set
+        let weight = neighbor.weight;
         let newDistance = distanceMap.get(currentCell) + weight;
 
         if (newDistance < distanceMap.get(neighbor)) {

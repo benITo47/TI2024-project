@@ -96,6 +96,7 @@ function updateGridSize(size) {
 // Reset running state
 function resetRunningState() {
   running = "";
+  isAnimating = false;
   console.log("Running state reset.");
 }
 
@@ -154,6 +155,7 @@ function updateControls(mode) {
       </div>
     `;
 
+    generateGrid(selectedGridSize);
     markSelectedGridSize(); // Update grid size indicator
   } else if (mode === "graph") {
     controlsContainer.innerHTML = `
@@ -164,14 +166,12 @@ function updateControls(mode) {
       </select>
       <button id="visualizeGraphBtn">Visualize</button>
     `;
+
+    generateCanvas();
   }
 
-  // Reattach event listeners for the new controls
   resetRunningState(); // Reset state when controls change
 }
-
-function updateWorkingConrainer(mode) {}
-// Visualize the selected algorithm
 
 function visualizeSelectedAlgorithm() {
   const selectedAlgorithm =

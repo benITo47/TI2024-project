@@ -180,12 +180,17 @@ table#grid td {
 }
 
 .cell-start {
+  border: 2px solid (var(--cell-start-color));
   background: var(--cell-start-color);
+  box-shadow: 2px 2px 2px 2px var(--cell-start-color);
   animation: pulse 1s infinite;
 }
 
 .cell-target {
   background: var(--cell-target-color);
+
+  border: 2px solid (var(--cell-target-color));
+  box-shadow: 2px 2px 2px 2px var(--cell-target-color);
   animation: pulse 1s infinite;
 }
 /* Animations */
