@@ -2,6 +2,8 @@ let isDragging = false;
 let draggedVertex = null;
 
 let graph;
+let startVertix = null;
+let targetVertix = null;
 
 function generateCanvas() {
   const container = document.querySelector("#workplaceContainer");
@@ -86,19 +88,39 @@ function createGraph() {
 
 function setupMouseEvents(canvas) {
   // Mouse down event
-  canvas.addEventListener("mousedown", mouseDownHandler);
+  canvas.addEventListener("mousedown", (e) => {
+    if (isMouseInsideCanvas(e, canvas)) {
+      canvasMouseDownHandler(e);
+    }
+  });
 
   // Mouse move event
-  canvas.addEventListener("mousemove", mouseMoveHandler);
+  canvas.addEventListener("mousemove", (e) => {
+    if (isDragging && draggedVertex) {
+      canvasMouseMoveHandler(e);
+    }
+  });
 
-  // Mouse up event
-  canvas.addEventListener("mouseup", mouseUpHandler);
+  // Mouse up event on the window to capture it even when outside the canvas
+  window.addEventListener("mouseup", () => {
+    canvasMouseUpHandler();
+  });
 }
 
-function mouseDownHandler(e) {
+function isMouseInsideCanvas(e, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  return (
+    e.clientX >= rect.left &&
+    e.clientX <= rect.right &&
+    e.clientY >= rect.top &&
+    e.clientY <= rect.bottom
+  );
+}
+
+function canvasMouseDownHandler(e) {
   e.preventDefault();
   const canvas = e.target;
-  const mousePosition = getMousePosition(e, canvas);
+  const mousePosition = getMousePositionCanvas(e, canvas);
 
   // Check if a vertex is clicked
   draggedVertex = getVertexAtPosition(mousePosition);
@@ -107,10 +129,10 @@ function mouseDownHandler(e) {
   }
 }
 
-function mouseMoveHandler(e) {
+function canvasMouseMoveHandler(e) {
   if (isDragging && draggedVertex) {
     const canvas = e.target;
-    const mousePosition = getMousePosition(e, canvas);
+    const mousePosition = getMousePositionCanvas(e, canvas);
     draggedVertex.x = mousePosition.x;
     draggedVertex.y = mousePosition.y;
 
@@ -120,12 +142,12 @@ function mouseMoveHandler(e) {
   }
 }
 
-function mouseUpHandler() {
+function canvasMouseUpHandler() {
   isDragging = false;
   draggedVertex = null;
 }
 
-function getMousePosition(e, canvas) {
+function getMousePositionCanvas(e, canvas) {
   const rect = canvas.getBoundingClientRect();
   return {
     x: e.clientX - rect.left,
@@ -145,12 +167,17 @@ function getVertexAtPosition(mousePosition) {
 }
 
 function animate(canvas, ctx) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  graph.applySpringForces();
-  graph.applyFriction();
-  graph.updatePositions();
-
-  graph.drawGraph(ctx);
-  requestAnimationFrame(() => animate(canvas, ctx));
+  try {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (graph) {
+      graph.applySpringForces();
+      graph.applyRepulsiveForces();
+      graph.applyFriction();
+      graph.updatePositions();
+      graph.drawGraph(ctx);
+    }
+    requestAnimationFrame(() => animate(canvas, ctx));
+  } catch (err) {
+    console.error("Error in animation loop:", err);
+  }
 }

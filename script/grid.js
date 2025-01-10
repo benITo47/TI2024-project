@@ -87,9 +87,9 @@ function generateGrid(size = 70) {
   grid.style.height = `${rows * cellSize}px`;
 
   // Attach mouse event listeners
-  grid.addEventListener("mousedown", handleMouseDown);
-  grid.addEventListener("mousemove", handleMouseMove);
-  grid.addEventListener("mouseup", handleMouseUp);
+  grid.addEventListener("mousedown", gridHandleMouseDown);
+  grid.addEventListener("mousemove", gridHandleMouseMove);
+  grid.addEventListener("mouseup", gridHandleMouseUp);
   grid.addEventListener("contextmenu", (event) => event.preventDefault()); // Disable context menu
 }
 
@@ -145,7 +145,7 @@ function toggleWeight(cell, isWeighted) {
   cell.htmlRef.classList.toggle("cell-weight", isWeighted);
 }
 
-function handleMouseDown(event) {
+function gridHandleMouseDown(event) {
   const cell = getCellFromEvent(event); // Helper to get cell from event.target
   if (!cell || isAnimating) return;
 
@@ -180,7 +180,7 @@ function handleMouseDown(event) {
   }
 }
 
-function handleMouseMove(event) {
+function gridHandleMouseMove(event) {
   if (!mouseState.isPressed || isAnimating) return;
 
   const cell = getCellFromEvent(event);
@@ -210,7 +210,7 @@ function handleMouseMove(event) {
   mouseState.previousCell = cell; // Update previous cell
 }
 
-function handleMouseUp() {
+function gridHandleMouseUp() {
   mouseState.isPressed = false;
   mouseState.action = null;
   mouseState.previousCell = null;
