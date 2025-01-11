@@ -251,3 +251,131 @@ canvas {
     height: 60vh; /* Reduce grid container size for smaller screens */
   }
 }
+
+/* Legend Container */
+.legend {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 20px;
+  padding: 10px;
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.legend-box {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(black);
+  position: relative;
+}
+
+/* Specific Legend Box Colors */
+.legend-start-box {
+  background-color: var(--cell-start-color);
+}
+
+.legend-target-box {
+  background-color: var(--cell-target-color);
+}
+
+.legend-wall-box {
+  background-color: var(--cell-wall-color);
+}
+
+.legend-weight-box {
+  border: 3px solid black;
+}
+
+/* Tooltip Styling */
+.legend-box[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: -35px; /* Adjust for vertical positioning */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.legend-box[title]:hover::before {
+  content: "";
+  position: absolute;
+  top: -10px; /* Adjust for the arrow positioning */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #333 transparent;
+  z-index: 10;
+  opacity: 1;
+}
+
+.legend-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(black);
+  position: relative;
+}
+
+/* Specific Legend Circle Colors */
+.legend-vertex {
+  background-color: #e0e0e0; /* Light blue */
+}
+
+.legend-start-vertex {
+  background-color: #007bff; /* Dark blue */
+}
+
+.legend-target-vertex {
+  background-color: #dc3545; /* Red */
+}
+
+/* Tooltip Styling */
+.legend-circle[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: -35px; /* Adjust for vertical positioning */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.legend-circle[title]:hover::before {
+  content: "";
+  position: absolute;
+  top: -10px; /* Adjust for the arrow positioning */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #333 transparent;
+  z-index: 10;
+  opacity: 1;
+}

@@ -39,6 +39,62 @@ function markSelectedGridSize() {
   });
 }
 
+function createGridLegend() {
+  const legendHTML = `
+    <div id="grid-legend" class="legend">
+      <div class="legend-item legend-start">
+        <div class="legend-box legend-start-box" title="Drag to move"></div>
+        <span>Start Cell</span>
+      </div>
+      <div class="legend-item legend-target">
+        <div class="legend-box legend-target-box" title="Drag to move"></div>
+        <span>Target Cell</span>
+      </div>
+      <div class="legend-item legend-wall">
+        <div class="legend-box legend-wall-box" title="Left-click to add, right-click to remove"></div>
+        <span>Wall</span>
+      </div>
+      <div class="legend-item legend-weight">
+        <div class="legend-box legend-weight-box" title="Shift + Left-click to add, Shift + Right-click to remove"></div>
+        <span>Weighted Cell</span>
+      </div>
+    </div>
+  `;
+  return legendHTML;
+}
+
+function createGraphLegend() {
+  const legendHTML = `
+    <div id="graph-legend" class="legend">
+      <div class="legend-item">
+        <div class="legend-circle legend-vertex" title="Vertex: Drag to move"></div>
+        <span>Vertex</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-circle legend-start-vertex" title="Start Vertex: Shift + Left-click to add, Drag to move"></div>
+        <span>Start Vertex</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-circle legend-target-vertex" title="Target Vertex: Shift + Right-click to add, Drag to move"></div>
+        <span>Target Vertex</span>
+      </div>
+    </div>
+  `;
+  return legendHTML;
+}
+
+function injectLegend(mode) {
+  const legendContainer = document.getElementById("legendContainer");
+
+  legendContainer.innerHTML = "";
+
+  if (mode === "grid") {
+    legendContainer.innerHTML = createGridLegend();
+  } else if (mode === "graph") {
+    legendContainer.innerHTML = createGraphLegend();
+  }
+}
+
 // Set up all event listeners
 function setupEventListeners() {
   const controlsContainer = document.getElementById("controlsContainer");
@@ -124,11 +180,15 @@ function toggleLoginState(isLoggedIn) {
 function initializeMode() {
   const mode = document.getElementById("modeSelect").value;
   updateControls(mode);
+
+  injectLegend(mode);
 }
 
 function handleModeChange(event) {
   const mode = event.target.value;
   updateControls(mode);
+
+  injectLegend(mode);
 }
 
 function updateControls(mode) {

@@ -12,12 +12,12 @@ class GraphVertex {
   }
 
   verticeColour() {
-    let colour = "#a4fcf8";
+    let colour = "#E0E0E0"; // Light Grey (default color)
 
-    if (this.isVisited) colour = "#81c784";
-    if (this.isPath) colour = "#ffd700";
-    if (this.isStart) colour = "#007bff";
-    if (this.isTarget) colour = "#dc3545";
+    if (this.isVisited) colour = "#81c784"; // Light Green
+    if (this.isPath) colour = "#ffd700"; // Gold
+    if (this.isStart) colour = "#007bff"; // Blue
+    if (this.isTarget) colour = "#dc3545"; // Red
 
     return colour;
   }
