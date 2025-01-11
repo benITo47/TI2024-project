@@ -79,6 +79,7 @@ function setupEventListeners() {
       event.target.id === "gridAlgorithmSelect" ||
       event.target.id === "graphAlgorithmSelect"
     ) {
+      graph?.resetVisited();
       resetRunningState();
       clearGrid(true);
     }
@@ -159,7 +160,7 @@ function updateControls(mode) {
   } else if (mode === "graph") {
     controlsContainer.innerHTML = `
       <label for="gridAlgorithmSelect">Select Algorithm:</label>
-      <select id="gridAlgorithmSelect">
+      <select id="gridAlgorithmSelect" >
         <option value="BFS">Breadth First Search</option>
         <option value="DFS">Depth First Search</option>
         <option value="dijkstra">Dijkstra's Algorithm</option>
@@ -238,6 +239,8 @@ function visualizeSelectedAlgorithmInRealTime() {
     console.log(`Running ${selectedAlgorithm}...`);
     running = selectedAlgorithm;
     algorithmMapping[selectedAlgorithm](cells, startCell, targetCell);
+
+    toggleControls(false);
   } else {
     console.error("Selected algorithm is not implemented or invalid.");
     alert("The selected algorithm is not available.");

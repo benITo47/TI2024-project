@@ -172,32 +172,27 @@ function AStarInRealTime(cellGrid, start, target) {
   while (!minHeap.isEmpty()) {
     const currentCell = minHeap.extractMin().cell;
 
-    // Skip if already visited
     if (visited.has(currentCell)) {
       continue;
     }
 
     visited.add(currentCell);
 
-    // Visualize visiting the cell
     const htmlCell = currentCell.htmlRef;
     htmlCell.classList.add("cell-visited");
 
-    // Check if the target is reached
     if (currentCell === target) {
       console.log("Path found!");
       findAndDrawPathRealTime(pathfindMap, target);
       return;
     }
 
-    // Process neighbors
     for (let i = 0; i < directions.length; i++) {
       const row =
         parseInt(currentCell.htmlRef.dataset["row"]) + directions[i][0];
       const col =
         parseInt(currentCell.htmlRef.dataset["col"]) + directions[i][1];
 
-      // Ensure neighbor is within bounds, not a wall, and not visited
       if (
         cellGrid[row] &&
         cellGrid[row][col] &&
@@ -212,7 +207,6 @@ function AStarInRealTime(cellGrid, start, target) {
           distanceMap.set(cellGrid[row][col], newDistance);
           pathfindMap.set(cellGrid[row][col], currentCell);
 
-          // Calculate priority using g + h
           const priority = newDistance + heuresticMap.get(cellGrid[row][col]);
           minHeap.insert({ cell: cellGrid[row][col], distance: priority });
         }
@@ -220,6 +214,5 @@ function AStarInRealTime(cellGrid, start, target) {
     }
   }
 
-  // If no path is found
   console.log("No path found!");
 }

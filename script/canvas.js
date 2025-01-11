@@ -29,32 +29,72 @@ function createCanvas(width, height) {
   return canvas;
 }
 
-function createGraph() {
+function createGraph(
+  dimensions = { width: 800, height: 800 },
+  rows = 5,
+  cols = 5,
+  weightRange = [1, 10],
+) {
   graph = new Graph();
+  const { width, height } = dimensions;
+  const vertices = [];
+  const spacingX = width / (cols + 1);
+  const spacingY = height / (rows + 1);
 
-  // Add vertices
-  graph.addVertex("A", 100, 100);
-  graph.addVertex("B", 200, 200);
-  graph.addVertex("C", 300, 100);
-  graph.addVertex("D", 300, 200);
-  graph.addVertex("E", 500, 200);
-  graph.addVertex("F", 600, 200);
-  graph.addVertex("G", 800, 100);
-  graph.addVertex("H", 700, 300);
-  graph.addVertex("I", 900, 300);
+  // Generate vertices in a grid layout
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      const x = Math.round((j + 1) * spacingX);
+      const y = Math.round((i + 1) * spacingY);
+      const id = String.fromCharCode(65 + vertices.length); // A, B, C, etc.
+      graph.addVertex(id, x, y);
+      vertices.push(id);
+    }
+  }
 
-  // Add edges
-  graph.addEdge("A", "B", 6);
-  graph.addEdge("B", "C", 6);
-  graph.addEdge("B", "D", 6);
-  graph.addEdge("B", "F", 6);
-  graph.addEdge("C", "D", 6);
-  graph.addEdge("C", "H", 6);
-  graph.addEdge("D", "F", 6);
-  graph.addEdge("D", "G", 6);
-  graph.addEdge("E", "F", 6);
-  graph.addEdge("F", "G", 6);
-  graph.addEdge("G", "I", 6);
+  // Generate edges with logical density
+  vertices.forEach((v, index) => {
+    const row = Math.floor(index / cols);
+    const col = index % cols;
+
+    // Add edges to right and bottom neighbors
+    if (col < cols - 1) {
+      const rightNeighbor = vertices[index + 1];
+      const weight =
+        Math.floor(Math.random() * (weightRange[1] - weightRange[0] + 1)) +
+        weightRange[0];
+      graph.addEdge(v, rightNeighbor, weight);
+    }
+
+    if (row < rows - 1) {
+      const bottomNeighbor = vertices[index + cols];
+      const weight =
+        Math.floor(Math.random() * (weightRange[1] - weightRange[0] + 1)) +
+        weightRange[0];
+      graph.addEdge(v, bottomNeighbor, weight);
+    }
+  });
+
+  // Optional: Add sparse cross-connections for complexity
+  const additionalEdges = Math.floor(vertices.length * 0.2); // 20% additional edges
+  for (let i = 0; i < additionalEdges; i++) {
+    const v1 = vertices[Math.floor(Math.random() * vertices.length)];
+    const v2 = vertices[Math.floor(Math.random() * vertices.length)];
+    if (
+      v1 !== v2 &&
+      !graph.edges.some(
+        (e) =>
+          (e.v1.id === v1 && e.v2.id === v2) ||
+          (e.v1.id === v2 && e.v2.id === v1),
+      )
+    ) {
+      const weight =
+        Math.floor(Math.random() * (weightRange[1] - weightRange[0] + 1)) +
+        weightRange[0];
+      graph.addEdge(v1, v2, weight);
+    }
+  }
+  return graph;
 }
 
 function setupMouseEvents(canvas) {
@@ -102,9 +142,10 @@ function canvasMouseDownHandler(e) {
       if (startVertex) {
         startVertex.isStart = false;
       }
-      graph.resetVisited();
       startVertex = clickedVertex;
       startVertex.isStart = true;
+      startVertex.isTarget = false;
+      graph.resetVisited();
     } else if (e.shiftKey && e.button === 2) {
       if (targetVertex) {
         targetVertex.isTarget = false;
@@ -113,9 +154,14 @@ function canvasMouseDownHandler(e) {
       graph.resetVisited();
       targetVertex = clickedVertex;
       targetVertex.isTarget = true;
+      targetVertex.isStart = false;
     } else {
       isDragging = true;
       draggedVertex = clickedVertex;
+      /* let gr = graph.getVertices();
+      for (let vertex of gr) {
+        console.log(vertex.id, vertex.x, vertex.y);
+      }*/
     }
   }
 }
