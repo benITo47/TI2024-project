@@ -9,8 +9,8 @@ let selectedGridSize = 70; // Default grid size
 
 // Initialize the application
 function initializeApp() {
-  setupEventListeners();
   initializeMode();
+  setupEventListeners();
   markSelectedGridSize();
   generateGrid(selectedGridSize);
 }
@@ -158,10 +158,12 @@ function updateControls(mode) {
     markSelectedGridSize(); // Update grid size indicator
   } else if (mode === "graph") {
     controlsContainer.innerHTML = `
-      <label for="graphAlgorithmSelect">Select Algorithm:</label>
-      <select id="graphAlgorithmSelect">
-        <option value="astar">A* Algorithm</option>
+      <label for="gridAlgorithmSelect">Select Algorithm:</label>
+      <select id="gridAlgorithmSelect">
+        <option value="BFS">Breadth First Search</option>
+        <option value="DFS">Depth First Search</option>
         <option value="dijkstra">Dijkstra's Algorithm</option>
+        <option value="astar">A* Algorithm</option>
       </select>
       <button id="visualizeGraphBtn">Visualize</button>
     `;
@@ -173,27 +175,50 @@ function updateControls(mode) {
 }
 
 function visualizeSelectedAlgorithm() {
+  const mode = document.getElementById("modeSelect").value;
   const selectedAlgorithm =
     document.getElementById("gridAlgorithmSelect")?.value ||
     document.getElementById("graphAlgorithmSelect")?.value;
 
   toggleControls(true);
+  if (mode === "grid") {
+    const algorithmMapping = {
+      BFS: executeBFS,
+      DFS: executeDFS,
+      dijkstra: executeDijkstra,
+      astar: executeAStar,
+    };
 
-  const algorithmMapping = {
-    BFS: executeBFS,
-    DFS: executeDFS,
-    dijkstra: executeDijkstra,
-    astar: executeAStar,
-  };
+    if (algorithmMapping[selectedAlgorithm]) {
+      console.log(`Running ${selectedAlgorithm}...`);
+      running = selectedAlgorithm;
+      algorithmMapping[selectedAlgorithm]();
+    } else {
+      console.error("Selected algorithm is not implemented or invalid.");
+      alert("The selected algorithm is not available.");
+      toggleControls(false);
+    }
+  } else if (mode === "graph") {
+    const algorithmMapping = {
+      BFS: graph.animateBFS.bind(graph), // Properly bind the graph instance
+      DFS: graph.animateDFS?.bind(graph), // Placeholder for other graph algorithms
+      dijkstra: graph.animateDijkstra?.bind(graph),
+      astar: graph.animateAStar?.bind(graph),
+    };
 
-  if (algorithmMapping[selectedAlgorithm]) {
-    console.log(`Running ${selectedAlgorithm}...`);
-    running = selectedAlgorithm;
-    algorithmMapping[selectedAlgorithm]();
-  } else {
-    console.error("Selected algorithm is not implemented or invalid.");
-    alert("The selected algorithm is not available.");
-    toggleControls(false);
+    if (algorithmMapping[selectedAlgorithm]) {
+      console.log(`Running ${selectedAlgorithm}...`);
+      running = selectedAlgorithm;
+      algorithmMapping[selectedAlgorithm](
+        startVertex,
+        targetVertex,
+        document.querySelector("canvas").getContext("2d"),
+      );
+    } else {
+      console.error("Selected algorithm is not implemented or invalid.");
+      alert("The selected algorithm is not available.");
+      toggleControls(false);
+    }
   }
 }
 

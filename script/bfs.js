@@ -108,5 +108,3 @@ function BFSinRealTime(cellGrid, start, target) {
 
   toggleControls(false);
 }
-
-function graphBFS(graph, start, target) {}

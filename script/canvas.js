@@ -2,8 +2,8 @@ let isDragging = false;
 let draggedVertex = null;
 
 let graph;
-let startVertix = null;
-let targetVertix = null;
+let startVertex = null;
+let targetVertex = null;
 
 function generateCanvas() {
   const container = document.querySelector("#workplaceContainer");
@@ -42,48 +42,19 @@ function createGraph() {
   graph.addVertex("G", 800, 100);
   graph.addVertex("H", 700, 300);
   graph.addVertex("I", 900, 300);
-  graph.addVertex("J", 100, 300);
-  graph.addVertex("K", 110, 200);
-  graph.addVertex("L", 120, 100);
-  graph.addVertex("M", 120, 300);
-  graph.addVertex("N", 130, 200);
-  graph.addVertex("O", 130, 100);
-  graph.addVertex("P", 150, 100);
-  graph.addVertex("Q", 140, 200);
-  graph.addVertex("R", 140, 300);
-  graph.addVertex("S", 160, 200);
 
   // Add edges
-  graph.addEdge("A", "B", 4);
-  graph.addEdge("B", "C", 7);
+  graph.addEdge("A", "B", 6);
+  graph.addEdge("B", "C", 6);
   graph.addEdge("B", "D", 6);
-  graph.addEdge("B", "F", 10);
-  graph.addEdge("C", "D", 2);
-  graph.addEdge("C", "H", 10);
-  graph.addEdge("D", "F", 10);
-  graph.addEdge("D", "G", 2);
-  graph.addEdge("E", "F", 10);
-  graph.addEdge("E", "J", 10);
-  graph.addEdge("F", "G", 1);
-  graph.addEdge("F", "J", 8);
-  graph.addEdge("G", "I", 1);
-  graph.addEdge("H", "K", 1);
-  graph.addEdge("I", "J", 8);
-  graph.addEdge("I", "L", 10);
-  graph.addEdge("J", "L", 1);
-  graph.addEdge("J", "M", 4);
-  graph.addEdge("K", "L", 3);
-  graph.addEdge("L", "M", 10);
-  graph.addEdge("L", "N", 10);
-  graph.addEdge("M", "N", 3);
-  graph.addEdge("N", "Q", 10);
-  graph.addEdge("O", "P", 7);
-  graph.addEdge("O", "Q", 5);
-  graph.addEdge("O", "R", 9);
-  graph.addEdge("P", "Q", 8);
-  graph.addEdge("P", "S", 4);
-  graph.addEdge("Q", "S", 2);
-  graph.addEdge("R", "S", 5);
+  graph.addEdge("B", "F", 6);
+  graph.addEdge("C", "D", 6);
+  graph.addEdge("C", "H", 6);
+  graph.addEdge("D", "F", 6);
+  graph.addEdge("D", "G", 6);
+  graph.addEdge("E", "F", 6);
+  graph.addEdge("F", "G", 6);
+  graph.addEdge("G", "I", 6);
 }
 
 function setupMouseEvents(canvas) {
@@ -100,6 +71,8 @@ function setupMouseEvents(canvas) {
       canvasMouseMoveHandler(e);
     }
   });
+
+  canvas.addEventListener("contextmenu", (event) => event.preventDefault());
 
   // Mouse up event on the window to capture it even when outside the canvas
   window.addEventListener("mouseup", () => {
@@ -123,9 +96,27 @@ function canvasMouseDownHandler(e) {
   const mousePosition = getMousePositionCanvas(e, canvas);
 
   // Check if a vertex is clicked
-  draggedVertex = getVertexAtPosition(mousePosition);
-  if (draggedVertex) {
-    isDragging = true;
+  const clickedVertex = getVertexAtPosition(mousePosition);
+  if (clickedVertex) {
+    if (e.shiftKey && e.button === 0) {
+      if (startVertex) {
+        startVertex.isStart = false;
+      }
+      graph.resetVisited();
+      startVertex = clickedVertex;
+      startVertex.isStart = true;
+    } else if (e.shiftKey && e.button === 2) {
+      if (targetVertex) {
+        targetVertex.isTarget = false;
+      }
+
+      graph.resetVisited();
+      targetVertex = clickedVertex;
+      targetVertex.isTarget = true;
+    } else {
+      isDragging = true;
+      draggedVertex = clickedVertex;
+    }
   }
 }
 

@@ -14,16 +14,13 @@ class GraphVertex {
   }
 
   verticeColour() {
-    let colour = "#25c1fa"; // Default color for unvisited vertices
+    let colour = "#a4fcf8"; // Default color for unvisited vertices
 
     if (this.isVisited) {
       colour = "#81c784"; // Green for visited vertices
     }
     if (this.isPath) {
       colour = "#ffd700"; // Gold for vertices that are part of the found path
-    }
-    if (this.isNext) {
-      colour = "#ffa500"; // Orange for vertices in the queue or being considered next
     }
     if (this.isStart) {
       colour = "#007bff"; // Blue for the start vertex
@@ -42,7 +39,7 @@ class GraphVertex {
     if (existingEdge) {
       existingEdge.weight = weight; // Update weight if edge exists
     } else {
-      this.edges.push({ neighbour, weight });
+      this.edges.push({ neighbour, weight, progress: 0 });
     }
   }
 }
@@ -53,6 +50,19 @@ class Graph {
     this.hasMoved = false; // Flag to track if any vertex has moved
     this.canvasHeight = 800;
     this.canvasWidth = 800;
+  }
+
+  // Reset visited status for all edges (if needed)
+  resetVisited() {
+    for (let vertex of this.vertices.values()) {
+      vertex.isVisited = false;
+      vertex.isNext = false;
+      vertex.isPath = false;
+
+      for (let edge of vertex.edges) {
+        edge.progress = 0;
+      }
+    }
   }
 
   // Add a vertex to the graph
@@ -77,7 +87,7 @@ class Graph {
     }
 
     vertexV.addEdge(vertexU, weight);
-    vertexU.addEdge(vertexV, weight); // For undirected graph
+    vertexU.addEdge(vertexV, weight);
   }
 
   // Apply spring forces (with edge weight consideration)
@@ -167,48 +177,6 @@ class Graph {
     }
   }
 
-  // Draw the graph to the canvas
-  drawGraph(ctx) {
-    this.canvasWidth = ctx.canvas.width;
-    this.canvasHeight = ctx.canvas.height;
-
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-    // Draw edges
-    for (let vertex of this.vertices.values()) {
-      for (let edge of vertex.edges) {
-        ctx.beginPath();
-        ctx.moveTo(vertex.x, vertex.y);
-        ctx.lineTo(edge.neighbour.x, edge.neighbour.y);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
-    }
-
-    // Draw vertices
-    for (let vertex of this.vertices.values()) {
-      ctx.beginPath();
-      ctx.arc(vertex.x, vertex.y, 20, 0, 2 * Math.PI);
-      ctx.fillStyle = vertex.verticeColour();
-      ctx.fill();
-      ctx.strokeStyle = "black";
-      ctx.stroke();
-
-      // Draw vertex id
-      ctx.fillStyle = "black";
-      ctx.font = "12px Arial";
-      ctx.fillText(vertex.id, vertex.x - 5, vertex.y + 4);
-    }
-  }
-
-  // Reset visited status for all edges (if needed)
-  resetVisited() {
-    for (let vertex of this.vertices.values()) {
-      vertex.edges = vertex.edges.map((edge) => ({ ...edge, visited: false }));
-    }
-  }
-
   // Get all vertices in the graph
   getVertices() {
     return Array.from(this.vertices.values());
@@ -220,20 +188,114 @@ class Graph {
     return vertex ? vertex.edges : [];
   }
 
-  // Method for positioning vertices in a more organized way (optional grid-based approach)
-  positionVerticesInGrid() {
-    const cols = 5;
-    let row = 1;
-    let col = 1;
-    const spacing = 125; // Space between vertices
+  drawEdges(ctx) {
     for (let vertex of this.vertices.values()) {
-      vertex.x = col * spacing;
-      vertex.y = row * spacing;
-      col++;
-      if (col >= cols) {
-        col = 0;
-        row++;
+      for (let edge of vertex.edges) {
+        const { neighbour, progress, color = "red" } = edge;
+
+        // Pełna krawędź (np. czarna)
+        ctx.beginPath();
+        ctx.moveTo(vertex.x, vertex.y);
+        ctx.lineTo(neighbour.x, neighbour.y);
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Progresywna część krawędzi (np. kolorowa)
+        if (progress > 0) {
+          const dx = neighbour.x - vertex.x;
+          const dy = neighbour.y - vertex.y;
+          const endX = vertex.x + dx * progress;
+          const endY = vertex.y + dy * progress;
+
+          ctx.beginPath();
+          ctx.moveTo(vertex.x, vertex.y);
+          ctx.lineTo(endX, endY);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
       }
     }
+  }
+
+  drawVertices(ctx) {
+    for (let vertex of this.vertices.values()) {
+      // Wierzchołek
+      ctx.beginPath();
+      ctx.arc(vertex.x, vertex.y, 20, 0, 2 * Math.PI);
+      ctx.fillStyle = vertex.verticeColour(); // Zwraca kolor na podstawie stanu
+      ctx.fill();
+      ctx.strokeStyle = "black";
+      ctx.stroke();
+
+      // Id wierzchołka
+      ctx.fillStyle = "black";
+      ctx.font = "12px Arial";
+      ctx.fillText(vertex.id, vertex.x - 5, vertex.y + 4);
+    }
+  }
+
+  drawGraph(ctx) {
+    this.drawEdges(ctx); // Rysuje krawędzie
+    this.drawVertices(ctx); // Rysuje wierzchołki
+  }
+
+  animateBFS(startV, targetV, ctx) {
+    // Ensure start and target vertices exist
+
+    if (!startV || !targetV) {
+      console.error("Start or target vertex does not exist.");
+      return;
+    }
+
+    // Reset visited status and path flags before starting BFS
+    this.resetVisited();
+
+    // BFS setup
+    const queue = []; // Queue for BFS traversal
+    const parentMap = new Map(); // To track the path
+
+    // Mark start vertex
+    startV.isVisited = true;
+    startV.isStart = true;
+    queue.push(startV);
+    parentMap.set(startV, null);
+
+    while (queue) {
+      const current = queue.shift(); // Dequeue the first vertex
+
+      // If we reach the target, reconstruct the path and mark it
+      if (current === targetV) {
+        targetV.isTarget = true;
+
+        // Reconstruct the path using parentMap
+        let pathVertex = targetV;
+        while (pathVertex) {
+          console.log("Marking path vertex:", pathVertex.id);
+          pathVertex.isPath = true;
+          pathVertex = parentMap.get(pathVertex);
+        }
+        return; // Exit after finding the target
+      }
+
+      // Visit neighbors
+      for (let edge of current.edges) {
+        const neighbor = edge.neighbour;
+        if (!neighbor.isVisited) {
+          neighbor.isVisited = true;
+          queue.push(neighbor);
+          parentMap.set(neighbor, current);
+          console.log("Visited neighbor:", neighbor.id, "Pushed to queue.");
+        }
+      }
+
+      console.log(
+        "Current queue state:",
+        queue.map((v) => v.id),
+      );
+    }
+
+    console.warn("Target vertex not found.");
   }
 }
