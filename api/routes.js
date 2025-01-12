@@ -3,25 +3,16 @@ const router = express.Router();
 const db = require("./db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const {
+  generateTokens,
+  invalidateRefreshToken,
+  findUserByRefreshToken,
+  authenticateToken,
+  updateRefreshToken,
+} = require("./utils.js");
 
 const JWT_SECRET = process.env.JWT_SECRET || "access_secret";
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "refresh_secret";
-
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
-  if (!token) return res.status(401).send("Access Denied");
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).send("Invalid Token");
-    req.user = user;
-    next();
-  });
-};
-
-// === Auth Routes ===
-
-// Register a new user
 
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
@@ -56,9 +47,6 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-// Login a user
-
-// Login route (backend)
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -68,6 +56,7 @@ router.post("/login", async (req, res) => {
   }
 
   try {
+    // Fetch the user from the database
     const userQuery = "SELECT * FROM users WHERE email = ?";
     const user = db.prepare(userQuery).get(email);
 
@@ -75,28 +64,22 @@ router.post("/login", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Validate the password
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
     if (!passwordMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const accessToken = jwt.sign(
-      { userId: user.user_id, username: user.username },
-      JWT_SECRET,
-      { expiresIn: "1h" },
-    );
+    // Generate new access and refresh tokens
+    const { accessToken, refreshToken } = generateTokens(user);
 
-    const refreshToken = jwt.sign(
-      { userId: user.user_id, username: user.username },
-      JWT_REFRESH_SECRET,
-      { expiresIn: "7d" },
-    );
-
+    // Update the refresh token in the database
     const updateRefreshTokenQuery = `
       UPDATE users SET refresh_token = ? WHERE user_id = ?
     `;
     db.prepare(updateRefreshTokenQuery).run(refreshToken, user.user_id);
 
+    // Respond with tokens and user details
     res.status(200).json({
       message: "Login successful",
       accessToken,
@@ -117,37 +100,27 @@ router.post("/token", (req, res) => {
     return res.status(401).json({ message: "Refresh token required" });
   }
 
-  const userQuery = "SELECT * FROM users WHERE refresh_token = ?";
-  const user = db.prepare(userQuery).get(refreshToken);
+  const user = findUserByRefreshToken(refreshToken);
 
   if (!user) {
     return res.status(403).json({ message: "Invalid refresh token" });
   }
 
   try {
-    jwt.verify(refreshToken, JWT_REFRESH_SECRET, (err, decodedUser) => {
+    jwt.verify(refreshToken, JWT_REFRESH_SECRET, (err) => {
       if (err) return res.status(403).json({ message: "Invalid token" });
 
-      const newAccessToken = jwt.sign(
-        { userId: user.user_id, username: user.username },
-        JWT_SECRET,
-        { expiresIn: "1h" },
-      );
+      const { accessToken, refreshToken: newRefreshToken } =
+        generateTokens(user);
 
-      const newRefreshToken = jwt.sign(
-        { userId: user.user_id, username: user.username },
-        JWT_REFRESH_SECRET,
-        { expiresIn: "7d" },
-      );
-
-      // Update the refresh token in the database
+      // Update the new refresh token in the database
       const updateRefreshTokenQuery = `
         UPDATE users SET refresh_token = ? WHERE user_id = ?
       `;
       db.prepare(updateRefreshTokenQuery).run(newRefreshToken, user.user_id);
 
       res.status(200).json({
-        accessToken: newAccessToken,
+        accessToken,
         refreshToken: newRefreshToken,
         userId: user.user_id,
         username: user.username,
@@ -159,9 +132,61 @@ router.post("/token", (req, res) => {
   }
 });
 
+// Verify Token
+
+router.post("/verify-token", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  const accessToken = authHeader && authHeader.split(" ")[1];
+  const refreshToken = req.body.refreshToken;
+
+  if (!accessToken) {
+    return res.status(401).json({ message: "Access token required" });
+  }
+
+  jwt.verify(accessToken, JWT_SECRET, async (err, user) => {
+    if (err) {
+      // If access token is invalid/expired, fallback to refresh token
+      if (err.name === "TokenExpiredError" && refreshToken) {
+        const userFromRefreshToken = findUserByRefreshToken(refreshToken);
+
+        if (!userFromRefreshToken) {
+          return res.status(403).json({ message: "Invalid refresh token" });
+        }
+
+        const { accessToken: newAccessToken } =
+          generateTokens(userFromRefreshToken);
+        return res.status(200).json({
+          accessToken: newAccessToken,
+          userId: userFromRefreshToken.user_id,
+          username: userFromRefreshToken.username,
+        });
+      }
+
+      return res.status(403).json({ message: "Invalid access token" });
+    }
+
+    res.status(200).json({ userId: user.userId, username: user.username });
+  });
+});
+
 // Logout a user
+
 router.post("/logout", (req, res) => {
-  // Handle logout logic here
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(400).json({ message: "Refresh token required" });
+  }
+
+  const user = findUserByRefreshToken(refreshToken);
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  invalidateRefreshToken(user.user_id);
+
+  res.status(200).json({ message: "Logout successful" });
 });
 
 // === Maze Routes ===

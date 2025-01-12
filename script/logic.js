@@ -1,10 +1,3 @@
-import {
-  fetchWithAuth,
-  toggleLoginState,
-  saveTokens,
-  clearLocalStorage,
-} from "../auth/auth.js";
-
 document.addEventListener("DOMContentLoaded", initializeApp);
 
 // Global Constants
@@ -15,13 +8,19 @@ let isAnimating = false;
 let selectedGridSize = 70; // Default grid size
 
 // Initialize the application
-function initializeApp() {
-  initializeMode();
-  setupEventListeners();
-  markSelectedGridSize();
-  generateGrid(selectedGridSize);
-}
 
+async function initializeApp() {
+  try {
+    await verifyUserOnDOMLoad(); // Add a log to check if this completes
+    console.log("User verification completed");
+    initializeMode();
+    setupEventListeners();
+    markSelectedGridSize();
+    generateGrid(selectedGridSize);
+  } catch (error) {
+    console.error("Error during app initialization:", error);
+  }
+}
 // Utility: Toggle Button Disabled State
 function toggleButtonState(buttonId, state) {
   const button = document.getElementById(buttonId);
@@ -142,13 +141,25 @@ function handleLogoutBtn() {
   window.location.href = "auth.html?action=logout";
 }
 
-function toggleLoginState(isLoggedIn) {
+function toggleLoginState(isLoggedIn, username = "") {
   document.getElementById("loginBtn").style.display = isLoggedIn
+    ? "none"
+    : "block";
+  document.getElementById("registerBtn").style.display = isLoggedIn
     ? "none"
     : "block";
   document.getElementById("logoutBtn").style.display = isLoggedIn
     ? "block"
     : "none";
+  document.getElementById("profileBtn").style.display = isLoggedIn
+    ? "block"
+    : "none";
+
+  if (isLoggedIn) {
+    document.getElementById("profileBtn").textContent = `Welcome, ${username}`;
+  } else {
+    document.getElementById("profileBtn").textContent = "";
+  }
 }
 
 function initializeMode() {
