@@ -1,3 +1,10 @@
+import {
+  fetchWithAuth,
+  toggleLoginState,
+  saveTokens,
+  clearLocalStorage,
+} from "../auth/auth.js";
+
 document.addEventListener("DOMContentLoaded", initializeApp);
 
 // Global Constants
@@ -39,50 +46,6 @@ function markSelectedGridSize() {
   });
 }
 
-function createGridLegend() {
-  const legendHTML = `
-    <div id="grid-legend" class="legend">
-      <div class="legend-item legend-start">
-        <div class="legend-box legend-start-box" title="Drag to move"></div>
-        <span>Start Cell</span>
-      </div>
-      <div class="legend-item legend-target">
-        <div class="legend-box legend-target-box" title="Drag to move"></div>
-        <span>Target Cell</span>
-      </div>
-      <div class="legend-item legend-wall">
-        <div class="legend-box legend-wall-box" title="Left-click to add, right-click to remove"></div>
-        <span>Wall</span>
-      </div>
-      <div class="legend-item legend-weight">
-        <div class="legend-box legend-weight-box" title="Shift + Left-click to add, Shift + Right-click to remove"></div>
-        <span>Weighted Cell</span>
-      </div>
-    </div>
-  `;
-  return legendHTML;
-}
-
-function createGraphLegend() {
-  const legendHTML = `
-    <div id="graph-legend" class="legend">
-      <div class="legend-item">
-        <div class="legend-circle legend-vertex" title="Vertex: Drag to move"></div>
-        <span>Vertex</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-circle legend-start-vertex" title="Start Vertex: Shift + Left-click to add, Drag to move"></div>
-        <span>Start Vertex</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-circle legend-target-vertex" title="Target Vertex: Shift + Right-click to add, Drag to move"></div>
-        <span>Target Vertex</span>
-      </div>
-    </div>
-  `;
-  return legendHTML;
-}
-
 function injectLegend(mode) {
   const legendContainer = document.getElementById("legendContainer");
 
@@ -106,8 +69,15 @@ function setupEventListeners() {
   }
 
   // Handle login/logout
-  document.getElementById("loginBtn")?.addEventListener("click", handleLogin);
-  document.getElementById("logoutBtn")?.addEventListener("click", handleLogout);
+  document
+    .getElementById("loginBtn")
+    ?.addEventListener("click", handleLoginBtn);
+  document
+    .getElementById("registerBtn")
+    ?.addEventListener("click", handleRegisterBtn);
+  document
+    .getElementById("logoutBtn")
+    ?.addEventListener("click", handleLogoutBtn);
 
   // Delegate events for dynamically added buttons
   controlsContainer.addEventListener("click", (event) => {
@@ -157,15 +127,19 @@ function resetRunningState() {
   console.log("Running state reset.");
 }
 
-// Login/Logout handlers
-function handleLogin() {
-  alert("Login/Register clicked");
-  toggleLoginState(true);
+function handleLoginBtn() {
+  // Redirect to auth.html for login
+  window.location.href = "auth.html?action=login";
 }
 
-function handleLogout() {
-  alert("Logged out");
-  toggleLoginState(false);
+function handleRegisterBtn() {
+  // Redirect to auth.html for registration
+  window.location.href = "auth.html?action=register";
+}
+
+function handleLogoutBtn() {
+  // Redirect to auth.html for logout
+  window.location.href = "auth.html?action=logout";
 }
 
 function toggleLoginState(isLoggedIn) {
@@ -233,6 +207,50 @@ function updateControls(mode) {
   }
 
   resetRunningState(); // Reset state when controls change
+}
+
+function createGridLegend() {
+  const legendHTML = `
+    <div id="grid-legend" class="legend">
+      <div class="legend-item legend-start">
+        <div class="legend-box legend-start-box" title="Drag to move"></div>
+        <span>Start Cell</span>
+      </div>
+      <div class="legend-item legend-target">
+        <div class="legend-box legend-target-box" title="Drag to move"></div>
+        <span>Target Cell</span>
+      </div>
+      <div class="legend-item legend-wall">
+        <div class="legend-box legend-wall-box" title="Left-click to add, right-click to remove"></div>
+        <span>Wall</span>
+      </div>
+      <div class="legend-item legend-weight">
+        <div class="legend-box legend-weight-box" title="Shift + Left-click to add, Shift + Right-click to remove"></div>
+        <span>Weighted Cell</span>
+      </div>
+    </div>
+  `;
+  return legendHTML;
+}
+
+function createGraphLegend() {
+  const legendHTML = `
+    <div id="graph-legend" class="legend">
+      <div class="legend-item">
+        <div class="legend-circle legend-vertex" title="Vertex: Drag to move"></div>
+        <span>Vertex</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-circle legend-start-vertex" title="Start Vertex: Shift + Left-click to add, Drag to move"></div>
+        <span>Start Vertex</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-circle legend-target-vertex" title="Target Vertex: Shift + Right-click to add, Drag to move"></div>
+        <span>Target Vertex</span>
+      </div>
+    </div>
+  `;
+  return legendHTML;
 }
 
 function visualizeSelectedAlgorithm() {
