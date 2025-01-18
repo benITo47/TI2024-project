@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <title>User Profile</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header>
+      <nav class="navbar">
+        <div class="logo">Pathfinding Visualizer</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="#" id="logoutBtn">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Profile Section -->
+    <main>
+      <section class="profile-section">
+        <h1>User Profile</h1>
+        <div id="userInfoContainer">
+          <!-- User info will be dynamically inserted here -->
+        </div>
+        <h2>Your Mazes</h2>
+        <div id="userMazesContainer">
+          <!-- User mazes will be dynamically inserted here -->
+        </div>
+      </section>
+    </main>
+
+    <script src="script/auth.js"></script>
+    <script src="script/profile.js"></script>
+  </body>
+</html>

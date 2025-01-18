@@ -85,6 +85,7 @@ function generateGrid(size = 70) {
   // Set the grid size to fit the container's size
   grid.style.width = `${columns * cellSize}px`;
   grid.style.height = `${rows * cellSize}px`;
+  mazeHasBeenSaved = false;
 
   // Attach mouse event listeners
   grid.addEventListener("mousedown", gridHandleMouseDown);
@@ -124,6 +125,7 @@ function clearGrid(keepWalls = false, keepPoints = true) {
       }
     }
   }
+  mazeHasBeenSaved = true;
 }
 
 function getCellFromEvent(event) {
@@ -134,6 +136,8 @@ function getCellFromEvent(event) {
 
 function toggleWall(cell, isWall) {
   if (cell.isStart || cell.isTarget) return; // Can't toggle walls on start/target cells
+
+  mazeHasBeenSaved = false;
   cell.isWall = isWall;
   cell.htmlRef.classList.toggle("cell-wall", isWall);
 }
@@ -141,6 +145,7 @@ function toggleWall(cell, isWall) {
 function toggleWeight(cell, isWeighted) {
   if (cell.isStart || cell.isTarget || cell.isWall) return;
 
+  mazeHasBeenSaved = false;
   cell.weight = isWeighted ? 50 : 1;
   cell.htmlRef.classList.toggle("cell-weight", isWeighted);
 }
@@ -227,6 +232,7 @@ function moveStartCell(newCell) {
   newCell.isStart = true;
 
   startCell = newCell;
+  mazeHasBeenSaved = false;
 
   if (running !== "") {
     clearGrid(true);
@@ -245,6 +251,7 @@ function moveTargetCell(newCell) {
 
   targetCell = newCell;
 
+  mazeHasBeenSaved = false;
   if (running !== "") {
     clearGrid(true); // Clear the grid but keep walls
     visualizeSelectedAlgorithmInRealTime();

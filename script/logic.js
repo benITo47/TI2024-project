@@ -6,12 +6,13 @@ const width = window.innerWidth;
 let running = ""; // Keeps track of the currently running algorithm
 let isAnimating = false;
 let selectedGridSize = 70; // Default grid size
+let mazeHasBeenSaved = false;
 
 // Initialize the application
 
 async function initializeApp() {
   try {
-    await verifyUserOnDOMLoad(); // Add a log to check if this completes
+    await verifyUserOnLoad(); // Add a log to check if this completes
     console.log("User verification completed");
     initializeMode();
     setupEventListeners();
@@ -75,6 +76,10 @@ function setupEventListeners() {
     .getElementById("registerBtn")
     ?.addEventListener("click", handleRegisterBtn);
   document
+    .getElementById("profileBtn")
+    ?.addEventListener("click", handleUserBtn);
+
+  document
     .getElementById("logoutBtn")
     ?.addEventListener("click", handleLogoutBtn);
 
@@ -136,12 +141,21 @@ function handleRegisterBtn() {
   window.location.href = "auth.html?action=register";
 }
 
+async function handleUserBtn() {
+  const userId = localStorage.getItem("userId");
+
+  window.location.href = `profile.html?user=${userId}`;
+}
+
 function handleLogoutBtn() {
   // Redirect to auth.html for logout
   window.location.href = "auth.html?action=logout";
 }
 
 function toggleLoginState(isLoggedIn, username = "") {
+  const mode = document.getElementById("modeSelect").value;
+  console.log("Auth one is being called");
+
   document.getElementById("loginBtn").style.display = isLoggedIn
     ? "none"
     : "block";
@@ -157,8 +171,18 @@ function toggleLoginState(isLoggedIn, username = "") {
 
   if (isLoggedIn) {
     document.getElementById("profileBtn").textContent = `Welcome, ${username}`;
+    const saveGridButton = document.getElementById("saveGridButton");
+    if (mode === "grid") {
+      saveGridButton.style.display = "block";
+      saveGridButton.disabled = false;
+    }
   } else {
     document.getElementById("profileBtn").textContent = "";
+    const saveGridButton = document.getElementById("saveGridButton");
+    if (saveGridButton) {
+      saveGridButton.style.display = "none";
+      saveGridButton.disabled = true;
+    }
   }
 }
 

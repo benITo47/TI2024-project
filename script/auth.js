@@ -72,7 +72,7 @@ function clearLocalStorage() {
   localStorage.removeItem("username");
 }
 
-async function verifyUserOnDOMLoad() {
+async function verifyUserOnLoad() {
   const accessToken = localStorage.getItem("accessToken");
   const refreshToken = localStorage.getItem("refreshToken");
 
@@ -110,20 +110,40 @@ async function verifyUserOnDOMLoad() {
   }
 }
 
-function toggleLoginState(isLoggedIn, username = "") {
-  document.getElementById("loginBtn").style.display = isLoggedIn
-    ? "none"
-    : "block";
-  document.getElementById("logoutBtn").style.display = isLoggedIn
-    ? "block"
-    : "none";
+async function fetchUserInfo() {
+  const userId = localStorage.getItem("userId");
+  const url = `http://localhost:4000/api/user/${userId}`;
 
-  if (isLoggedIn && username) {
-    const userGreeting = document.getElementById("userGreeting");
-    if (userGreeting) {
-      userGreeting.textContent = `Welcome, ${username}!`;
+  try {
+    const response = await fetchWithAuth(url);
+    if (response.ok) {
+      const userData = await response.json();
+      return userData;
+    } else {
+      console.error("Failed to fetch user info:", await response.text());
     }
+  } catch (error) {
+    console.error("Error fetching user info:", error);
   }
+  return null;
+}
+
+async function fetchUserMazes() {
+  const userId = localStorage.getItem("userId");
+  const url = `http://localhost:4000/api/mazes/${userId}`;
+
+  try {
+    const response = await fetchWithAuth(url);
+    if (response.ok) {
+      const mazes = await response.json();
+      return mazes;
+    } else {
+      console.error("Failed to fetch user mazes:", await response.text());
+    }
+  } catch (error) {
+    console.error("Error fetching user mazes:", error);
+  }
+  return [];
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -148,6 +168,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (action === "logout") {
       handleLogout();
     }
+  } else {
+    document
+      .getElementById("saveGridButton")
+      ?.addEventListener("click", saveGrid);
   }
   function isAuthPage() {
     return window.location.pathname.includes("auth.html");
@@ -252,6 +276,50 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Logout failed:", error);
       authMessage.textContent =
         "An error occurred while logging out. Please try again.";
+    }
+  }
+
+  async function saveGrid() {
+    if (!mazeHasBeenSaved) {
+      let encodedGrid = cells
+        .map((row) =>
+          row
+            .map((cell) => {
+              if (cell.isStart) return "S";
+              if (cell.isTarget) return "T";
+              if (cell.isWall) return "W";
+              if (cell.weight > 1) return "#";
+              return "0";
+            })
+            .join(""),
+        )
+        .join("\n");
+
+      console.log("Encoded Grid:", encodedGrid);
+
+      const response = await fetchWithAuth(
+        "http://localhost:4000/api/save-maze",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            rows: cells.length,
+            cols: cells[0].length,
+            startNode: { row: startCell.row, col: startCell.row },
+            targetNode: { row: targetCell.row, col: targetCell.row },
+            data: encodedGrid,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        console.log("Grid saved successfully!");
+        mazeHasBeenSaved = true;
+      } else {
+        console.error("Failed to save the grid.");
+      }
+    } else {
+      alert("Change the maze before saving again!");
     }
   }
 

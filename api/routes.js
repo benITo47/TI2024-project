@@ -189,21 +189,102 @@ router.post("/logout", (req, res) => {
   res.status(200).json({ message: "Logout successful" });
 });
 
-// === Maze Routes ===
+router.post("/save-maze", authenticateToken, (req, res) => {
+  const { rows, cols, startNode, targetNode, data } = req.body;
 
-// Save a maze
-router.post("/maze", authenticateToken, (req, res) => {
-  // Save maze for the authenticated user
+  if (!rows || !cols || !startNode || !targetNode || !data) {
+    return res.status(400).json({ message: "All maze details are required" });
+  }
+
+  if (rows > 100 || cols > 100) {
+    return res
+      .status(400)
+      .json({ message: "Maze dimensions cannot exceed 100x100" });
+  }
+
+  try {
+    const userId = req.userToken.userId;
+
+    // Get the current count of mazes for this user
+    const countQuery = `
+      SELECT COUNT(*) AS count FROM mazes WHERE user_id = ?
+    `;
+    const { count } = db.prepare(countQuery).get(userId);
+
+    // Generate a unique maze name based on the count
+    const mazeNumber = count + 1;
+    const mazeName = `${req.userToken.username}'s Maze ${mazeNumber}`;
+
+    const insertQuery = `
+      INSERT INTO mazes (user_id, maze_name, rows, cols, start_node, target_node, data)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const result = db.prepare(insertQuery).run(
+      userId,
+      mazeName,
+      rows,
+      cols,
+      JSON.stringify(startNode), // Convert coordinates to JSON string
+      JSON.stringify(targetNode), // Convert coordinates to JSON string
+      JSON.stringify(data), // Convert 2D matrix to JSON string
+    );
+
+    res.status(201).json({
+      message: "Maze saved successfully",
+      mazeId: result.lastInsertRowid,
+      mazeName,
+    });
+  } catch (error) {
+    console.error("Error saving maze:", error);
+
+    if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+      return res
+        .status(409)
+        .json({ message: "Maze name must be unique for this user" });
+    }
+
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
-// Fetch all mazes for a user
-router.get("/mazes", authenticateToken, (req, res) => {
-  // Fetch mazes logic here
+router.get("/user/:userId", authenticateToken, (req, res) => {
+  const { userId } = req.params;
+
+  if (userId != req.userToken.userId) {
+    res.status(500).json({ message: "Cannot view other's profiles" });
+  }
+  try {
+    const userQuery = "SELECT username, email FROM users WHERE user_id = ?";
+    const user = db.prepare(userQuery).get(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
-// Delete a maze
-router.delete("/maze/:id", authenticateToken, (req, res) => {
-  // Delete maze logic here
+router.get("/mazes/:userId", authenticateToken, (req, res) => {
+  const { userId } = req.params;
+  if (userId != req.userToken.userId) {
+    res.status(500).json({ message: "Cannot view other's mazes" });
+  }
+  try {
+    const mazesQuery = `
+      SELECT maze_id, maze_name , rows, cols, created_at FROM mazes WHERE user_id = ?
+    `;
+    const mazes = db.prepare(mazesQuery).all(userId);
+
+    res.status(200).json(mazes);
+  } catch (error) {
+    console.error("Error fetching mazes:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 module.exports = router;

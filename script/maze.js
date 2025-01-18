@@ -106,6 +106,7 @@ function generateMazePrim(cellGrid, frontierArr, mazeDirections) {
       setStartAndTargetCells();
     }, 20);
     toggleControls(false);
+    mazeHasBeenSaved = false;
   }
 }
 
