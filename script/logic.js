@@ -87,7 +87,7 @@ function setupEventListeners() {
       clearPathButton: () => clearGrid(true),
       visualizeGridButton: () => visualizeSelectedAlgorithm(),
       generate50x50: () => updateGridSize(50),
-      generate10x10: () => updateGridSize(5),
+      generate25x25: () => updateGridSize(25),
       generate70x70: () => updateGridSize(70),
       generate100x100: () => updateGridSize(100),
       visualizeGraphBtn: () => visualizeSelectedAlgorithm(),
@@ -134,6 +134,7 @@ function handleLogoutBtn() {
 
 function toggleLoginState(isLoggedIn, username = "") {
   const mode = document.getElementById("modeSelect").value;
+  console.log("Auth one is being called");
 
   document.getElementById("loginBtn").style.display = isLoggedIn
     ? "none"
@@ -154,6 +155,9 @@ function toggleLoginState(isLoggedIn, username = "") {
     if (mode === "grid") {
       saveGridButton.style.display = "block";
       saveGridButton.disabled = false;
+    } else {
+      saveGridButton.style.display = "none";
+      saveGridButton.disabled = true;
     }
   } else {
     document.getElementById("profileBtn").textContent = "";
@@ -197,7 +201,7 @@ function updateControls(mode) {
       <button id="clearPathButton">Clear Path</button>
       <button id="visualizeGridButton">Visualize</button>
       <div class="grid-size-buttons">
-        <button id="generate10x10">10 x 10 Grid</button>
+        <button id="generate25x25">25 x 25 Grid</button>
         <button id="generate50x50">50 x 50 Grid</button>
         <button id="generate70x70">70 x 70 Grid</button>
         <button id="generate100x100">100 x 100 Grid</button>
@@ -219,6 +223,14 @@ function updateControls(mode) {
     `;
 
     generateCanvas();
+  }
+
+  const username = localStorage.getItem("username");
+
+  if (username) {
+    toggleLoginState(true, username);
+  } else {
+    toggleLoginState(false);
   }
 
   resetRunningState(); // Reset state when controls change

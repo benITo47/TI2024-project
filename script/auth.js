@@ -48,6 +48,7 @@ async function refreshAccessToken() {
   } catch (error) {
     console.error("Error refreshing tokens:", error);
     clearLocalStorage();
+    toggleLoginState(false);
   }
   return null;
 }

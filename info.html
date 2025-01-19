@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <title>Pathfinding Visualizer - Info</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header>
+      <nav class="navbar">
+        <div class="logo">Pathfinding Visualizer</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content Section -->
+    <main class="info-main">
+      <section class="info-section">
+        <h1 class="section-title">About Pathfinding Visualizer</h1>
+        <p class="section-description">
+          The Pathfinding Visualizer is a tool designed to help users understand
+          and visualize how various graph search algorithms work. This tool
+          supports two modes:
+        </p>
+        <ul class="info-list">
+          <li>
+            <strong>2D Grid Mode:</strong> A grid-based visualization where
+            algorithms find paths from a start point to an endpoint.
+          </li>
+          <li>
+            <strong>Graph Mode:</strong> A general graph visualization with
+            nodes and edges, ideal for non-grid-based structures.
+          </li>
+        </ul>
+      </section>
+      <section class="how-it-works-section">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-description">
+          The visualizer allows you to select start and end points, place walls
+          or weights, and then run your chosen algorithm to see how it searches
+          for a path. Each step of the algorithm is animated to provide an
+          intuitive understanding of its mechanics.
+        </p>
+        <p class="section-description">
+          In grid mode, the grid cells represent nodes, and adjacent cells are
+          connected. In graph mode, nodes and edges are represented as circles
+          and lines, respectively, with longer edges representing bigger
+          weights.
+        </p>
+      </section>
+      <section class="algorithms-section">
+        <h2 class="section-title">Implemented Algorithms</h2>
+        <article class="algorithm-description">
+          <h3>Breadth-First Search (BFS)</h3>
+          <p>
+            BFS explores all neighbors at the current depth before moving
+            deeper. It guarantees the shortest path. BFS is ideal for scenarios
+            where finding the shortest path is critical.
+          </p>
+        </article>
+        <article class="algorithm-description">
+          <h3>Depth-First Search (DFS)</h3>
+          <p>
+            DFS dives deep into one branch before backtracking. It does not
+            guarantee the shortest path but is useful for exploring all possible
+            paths in a graph.
+          </p>
+        </article>
+        <article class="algorithm-description">
+          <h3>Dijkstra's Algorithm</h3>
+          <p>
+            Dijkstra's algorithm finds the shortest path in weighted graphs. It
+            uses a priority queue to explore nodes in order of their accumulated
+            cost from the start node.
+          </p>
+        </article>
+        <article class="algorithm-description">
+          <h3>A* Algorithm</h3>
+          <p>
+            A* is a heuristic-based search algorithm that combines the strengths
+            of Dijkstra's algorithm and a heuristic function. It is faster than
+            Dijkstra when a good heuristic is provided, and it guarantees the
+            shortest path.
+          </p>
+          <p>
+            <span>In grid mode</span>, A* uses the Manhattan distance as its
+            heuristic, which calculates the distance between two points based on
+            a grid layout (horizontal and vertical steps only).
+          </p>
+          <p>
+            <span>In graph mode</span>, A* uses a Euclidean distance-based
+            heuristic, calculated as the straight-line distance between two
+            nodes:
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+      <p>&copy; 2025 Pathfinding Visualizer. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
