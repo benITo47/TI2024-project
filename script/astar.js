@@ -47,7 +47,7 @@ function AStar(
   priorityQueue,
 ) {
   if (priorityQueue.isEmpty()) {
-    console.log("No path found!");
+    alert("No path found!");
     toggleControls(false);
 
     isAnimating = false;
@@ -85,7 +85,6 @@ function AStar(
   }, 1000);
 
   if (currentCell === target) {
-    console.log("Path found!");
     findAndDrawPath(pathfindMap, target);
     return;
   }
@@ -182,7 +181,6 @@ function AStarInRealTime(cellGrid, start, target) {
     htmlCell.classList.add("cell-visited");
 
     if (currentCell === target) {
-      console.log("Path found!");
       findAndDrawPathRealTime(pathfindMap, target);
       return;
     }
@@ -213,6 +211,4 @@ function AStarInRealTime(cellGrid, start, target) {
       }
     }
   }
-
-  console.log("No path found!");
 }

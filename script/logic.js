@@ -134,7 +134,6 @@ function handleLogoutBtn() {
 
 function toggleLoginState(isLoggedIn, username = "") {
   const mode = document.getElementById("modeSelect").value;
-  console.log("Auth one is being called");
 
   document.getElementById("loginBtn").style.display = isLoggedIn
     ? "none"

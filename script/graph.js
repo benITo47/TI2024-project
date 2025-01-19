@@ -219,10 +219,7 @@ class Graph {
       currentLevelQueue.forEach((currentVertex) => {
         if (targetFound) return;
 
-        console.log("Processing vertex:", currentVertex.id);
-
         if (currentVertex === targetVertex) {
-          console.log("Target vertex reached:", currentVertex.id);
           targetVertex.isTarget = true;
           targetFound = true;
 
@@ -324,7 +321,6 @@ class Graph {
       const current = stack.pop();
 
       current.isVisited = true;
-      console.log("Processing vertex:", current.id);
 
       const parent = parentMap.get(current);
       if (parent) {
@@ -384,8 +380,6 @@ class Graph {
 
           stack.push(neighbor);
           parentMap.set(neighbor, current);
-
-          console.log("Visited neighbor:", neighbor.id);
         }
       });
 
@@ -451,7 +445,6 @@ class Graph {
 
       // If the current vertex is the target
       if (current === targetVertex) {
-        console.log("Target vertex reached:", current.id);
         targetVertex.isTarget = true;
 
         const path = [];
@@ -568,10 +561,8 @@ class Graph {
       if (current.isVisited) return;
 
       current.isVisited = true;
-      console.log("Processing vertex:", current.id);
 
       if (current === targetVertex) {
-        console.log("Target vertex reached:", current.id);
         targetVertex.isTarget = true;
 
         const path = [];

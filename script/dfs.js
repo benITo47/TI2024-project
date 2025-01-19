@@ -18,7 +18,7 @@ function executeDFS() {
 
 function DFS(cellGrid, target, stack, pathfindMap, visited) {
   if (stack.length === 0) {
-    console.log("No path found!");
+    alert("No path found!");
     toggleControls(false);
 
     isAnimating = false;
@@ -36,7 +36,6 @@ function DFS(cellGrid, target, stack, pathfindMap, visited) {
   visited.add(currentCell); // Mark cell as visited
   let htmlCell = currentCell.htmlRef;
 
-  // Animate the current cell
   htmlCell.classList.add("cell-current");
   setTimeout(() => {
     htmlCell.classList.remove("cell-current");
@@ -45,7 +44,6 @@ function DFS(cellGrid, target, stack, pathfindMap, visited) {
 
   // Check if the target is reached
   if (currentCell === target) {
-    console.log("Path found!");
     findAndDrawPath(pathfindMap, currentCell);
     return;
   }
@@ -54,7 +52,6 @@ function DFS(cellGrid, target, stack, pathfindMap, visited) {
     let row = parseInt(currentCell.htmlRef.dataset["row"]) + directions[i][0];
     let col = parseInt(currentCell.htmlRef.dataset["col"]) + directions[i][1];
 
-    // Ensure neighbor is within bounds, not a wall, and not visited
     if (
       cellGrid[row] &&
       cellGrid[row][col] &&
@@ -62,11 +59,10 @@ function DFS(cellGrid, target, stack, pathfindMap, visited) {
       !visited.has(cellGrid[row][col])
     ) {
       stack.push(cellGrid[row][col]);
-      pathfindMap.set(cellGrid[row][col], currentCell); // Track the path
+      pathfindMap.set(cellGrid[row][col], currentCell);
     }
   }
 
-  // Continue the animation
   setTimeout(() => DFS(cellGrid, target, stack, pathfindMap, visited), 10);
 }
 
@@ -93,7 +89,6 @@ function DFSinRealTime(cellGrid, start, target) {
 
     if (currentCell.isTarget) {
       findAndDrawPathRealTime(pathfindMap, currentCell);
-      console.log("Path found in real-time!");
       return;
     }
 
@@ -120,8 +115,6 @@ function DFSinRealTime(cellGrid, start, target) {
       }
     }
   }
-
-  console.log("No path found in real-time!");
 
   toggleControls(false);
 }

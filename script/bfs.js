@@ -58,6 +58,7 @@ function BFS(cellGrid, start, target, queue, pathfindMap) {
     }, 80);
   } else {
     toggleControls(false);
+    alert("Path not found");
     isAnimating = false;
   }
 }
@@ -103,8 +104,6 @@ function BFSinRealTime(cellGrid, start, target) {
       }
     }
   }
-
-  console.log("No path found");
 
   toggleControls(false);
 }

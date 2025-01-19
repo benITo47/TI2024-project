@@ -39,7 +39,6 @@ function markSelectedGridSize() {
 function resetRunningState() {
   running = "";
   isAnimating = false;
-  console.log("Running state reset.");
 }
 
 function generateGrid(size = 70) {
@@ -302,8 +301,6 @@ async function saveGrid() {
       )
       .join("");
 
-    console.log("Encoded Grid:", encodedGrid);
-
     const response = await fetchWithAuth(
       "http://localhost:4000/api/save-maze",
       {
@@ -363,13 +360,13 @@ function loadMazeFromData(mazeData) {
   console.log(data);
   for (let i = 0; i < cells.length; i++) {
     for (let j = 0; j < cells[0].length; j++) {
-      const cellIndex = i * cols + j;
+      const cellIndex = i * cols + j + 1;
 
-      if (j === 0 || j === cells.length) {
+      /*if (j === 0 || j === cells.length) {
         console.log(
           `Mapping grid cell (${i}, ${j}) to data index ${cellIndex}`,
         );
-      }
+      }*/
       if (cellIndex >= data.length) {
         console.error(
           `Index ${cellIndex} out of bounds for data length ${data.length}.`,

@@ -298,8 +298,10 @@ async function deleteMaze(mazeId) {
     }
 
     const data = await response.json();
-    console.log("Maze deleted:", data.message);
     alert("Maze deleted successfully!");
+    const userId = localStorage.getItem("userId");
+
+    window.location.href = `profile.html?user=${userId}`;
   } catch (error) {
     console.error("Error deleting maze:", error);
     alert("An error occurred while deleting the maze.");

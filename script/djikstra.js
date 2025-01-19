@@ -34,7 +34,7 @@ function Dijkstra(
   priorityQueue,
 ) {
   if (priorityQueue.isEmpty()) {
-    console.log("No path found!");
+    alert("No path found!");
 
     isAnimating = false;
     toggleControls(false);
