@@ -110,9 +110,8 @@ async function verifyUserOnLoad() {
   }
 }
 
-async function fetchUserInfo() {
-  const userId = localStorage.getItem("userId");
-  const url = `http://localhost:4000/api/user/${userId}`;
+async function fetchUserInfo(id) {
+  const url = `http://localhost:4000/api/user/${id}`;
 
   try {
     const response = await fetchWithAuth(url);
@@ -128,9 +127,8 @@ async function fetchUserInfo() {
   return null;
 }
 
-async function fetchUserMazes() {
-  const userId = localStorage.getItem("userId");
-  const url = `http://localhost:4000/api/mazes/${userId}`;
+async function fetchUserMazes(id) {
+  const url = `http://localhost:4000/api/mazes/${id}`;
 
   try {
     const response = await fetchWithAuth(url);

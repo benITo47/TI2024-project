@@ -2,9 +2,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userInfoContainer = document.getElementById("userInfoContainer");
   const userMazesContainer = document.getElementById("userMazesContainer");
 
+  const getUserIdFromUrl = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("user"); // Gets the value of the 'user' parameter
+  };
+
   try {
-    // Fetch and display user info
-    const userInfo = await fetchUserInfo();
+    const fetchId = getUserIdFromUrl();
+    const userInfo = await fetchUserInfo(fetchId);
     if (userInfo) {
       userInfoContainer.innerHTML = `
         <div class="profile-info">
@@ -17,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Fetch and display user mazes
-    const userMazes = await fetchUserMazes();
+    const userMazes = await fetchUserMazes(fetchId);
     if (userMazes.length > 0) {
       userMazesContainer.innerHTML = userMazes
         .map(
