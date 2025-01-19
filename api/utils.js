@@ -46,7 +46,7 @@ const authenticateToken = (req, res, next) => {
   if (!token) return res.status(401).send("Access Denied");
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).send("Invalid Token");
+    if (err) return res.status(401).send("Invalid Token");
     req.userToken = user;
     next();
   });

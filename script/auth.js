@@ -277,51 +277,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  async function saveGrid() {
-    if (!mazeHasBeenSaved) {
-      let encodedGrid = cells
-        .map((row) =>
-          row
-            .map((cell) => {
-              if (cell.isStart) return "S";
-              if (cell.isTarget) return "T";
-              if (cell.isWall) return "W";
-              if (cell.weight > 1) return "#";
-              return "0";
-            })
-            .join(""),
-        )
-        .join("\n");
-
-      console.log("Encoded Grid:", encodedGrid);
-
-      const response = await fetchWithAuth(
-        "http://localhost:4000/api/save-maze",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            rows: cells.length,
-            cols: cells[0].length,
-            startNode: { row: startCell.row, col: startCell.row },
-            targetNode: { row: targetCell.row, col: targetCell.row },
-            data: encodedGrid,
-          }),
-        },
-      );
-
-      if (response.ok) {
-        console.log("Grid saved successfully!");
-        mazeHasBeenSaved = true;
-      } else {
-        console.error("Failed to save the grid.");
-      }
-    } else {
-      alert("Change the maze before saving again!");
-    }
-  }
-
   function returnToPreviousPage() {
     window.location.href = document.referrer || "index.html";
   }
 });
+
+async function deleteMaze(mazeId) {
+  try {
+    const response = await fetchWithAuth(
+      `http://localhost:4000/api/maze/${mazeId}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      alert(`Failed to delete maze: ${errorData.message}`);
+      return;
+    }
+
+    const data = await response.json();
+    console.log("Maze deleted:", data.message);
+    alert("Maze deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting maze:", error);
+    alert("An error occurred while deleting the maze.");
+  }
+}

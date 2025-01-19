@@ -56,7 +56,6 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    // Fetch the user from the database
     const userQuery = "SELECT * FROM users WHERE email = ?";
     const user = db.prepare(userQuery).get(email);
 
@@ -64,22 +63,18 @@ router.post("/login", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Validate the password
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
     if (!passwordMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Generate new access and refresh tokens
     const { accessToken, refreshToken } = generateTokens(user);
 
-    // Update the refresh token in the database
     const updateRefreshTokenQuery = `
       UPDATE users SET refresh_token = ? WHERE user_id = ?
     `;
     db.prepare(updateRefreshTokenQuery).run(refreshToken, user.user_id);
 
-    // Respond with tokens and user details
     res.status(200).json({
       message: "Login successful",
       accessToken,
@@ -276,7 +271,7 @@ router.get("/mazes/:userId", authenticateToken, (req, res) => {
   }
   try {
     const mazesQuery = `
-      SELECT maze_id, maze_name , rows, cols, created_at FROM mazes WHERE user_id = ?
+      SELECT maze_id, maze_name , rows, cols, created_at FROM mazes WHERE user_id = ? ORDER BY created_at DESC
     `;
     const mazes = db.prepare(mazesQuery).all(userId);
 
@@ -284,6 +279,56 @@ router.get("/mazes/:userId", authenticateToken, (req, res) => {
   } catch (error) {
     console.error("Error fetching mazes:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/load-maze/:id", authenticateToken, (req, res) => {
+  const mazeId = req.params.id;
+
+  try {
+    const mazeQuery = `SELECT * FROM mazes WHERE  maze_id = ?`;
+
+    const maze = db.prepare(mazeQuery).all(mazeId);
+
+    res.status(200).json(maze[0]);
+  } catch (e) {
+    console.error("Error getting maze", e);
+    res
+      .status(500)
+      .json({ message: "This maze is not asigned to your account" });
+  }
+});
+
+router.delete("/maze/:id", authenticateToken, (req, res) => {
+  const mazeId = req.params.id;
+  const userId = req.userToken.userId;
+
+  try {
+    const mazeCheckQuery = `SELECT * FROM mazes WHERE maze_id = ? AND user_id = ?`;
+    const maze = db.prepare(mazeCheckQuery).get(mazeId, userId);
+
+    if (!maze) {
+      return res
+        .status(403)
+        .json({
+          message:
+            "This maze is not assigned to your account or does not exist.",
+        });
+    }
+
+    const deleteQuery = `DELETE FROM mazes WHERE maze_id = ?`;
+    const result = db.prepare(deleteQuery).run(mazeId);
+
+    if (result.changes > 0) {
+      res.status(200).json({ message: "Maze deleted successfully." });
+    } else {
+      res.status(500).json({ message: "Failed to delete the maze." });
+    }
+  } catch (e) {
+    console.error("Error deleting maze:", e);
+    res
+      .status(500)
+      .json({ message: "An error occurred while deleting the maze." });
   }
 });
 

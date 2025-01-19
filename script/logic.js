@@ -3,25 +3,32 @@ document.addEventListener("DOMContentLoaded", initializeApp);
 // Global Constants
 const height = window.innerHeight;
 const width = window.innerWidth;
-let running = ""; // Keeps track of the currently running algorithm
-let isAnimating = false;
-let selectedGridSize = 70; // Default grid size
+
 let mazeHasBeenSaved = false;
 
 // Initialize the application
 
 async function initializeApp() {
   try {
-    await verifyUserOnLoad(); // Add a log to check if this completes
-    console.log("User verification completed");
+    await verifyUserOnLoad();
     initializeMode();
     setupEventListeners();
+
+    const mazeDataString = localStorage.getItem("mazeData");
+    if (mazeDataString) {
+      const mazeData = JSON.parse(mazeDataString);
+      loadMazeFromData(mazeData);
+      localStorage.removeItem("mazeData");
+    } else {
+      generateGrid(selectedGridSize);
+    }
+
     markSelectedGridSize();
-    generateGrid(selectedGridSize);
   } catch (error) {
     console.error("Error during app initialization:", error);
   }
 }
+
 // Utility: Toggle Button Disabled State
 function toggleButtonState(buttonId, state) {
   const button = document.getElementById(buttonId);
@@ -33,19 +40,6 @@ function toggleButtonState(buttonId, state) {
 }
 
 // Utility: Mark selected grid size button
-function markSelectedGridSize() {
-  const gridSizeButtons = ["generate50x50", "generate70x70", "generate100x100"];
-  gridSizeButtons.forEach((id) => {
-    const button = document.getElementById(id);
-    if (button) {
-      button.classList.toggle(
-        "active",
-        id === `generate${selectedGridSize}x${selectedGridSize}`,
-      );
-    }
-  });
-}
-
 function injectLegend(mode) {
   const legendContainer = document.getElementById("legendContainer");
 
@@ -93,6 +87,7 @@ function setupEventListeners() {
       clearPathButton: () => clearGrid(true),
       visualizeGridButton: () => visualizeSelectedAlgorithm(),
       generate50x50: () => updateGridSize(50),
+      generate10x10: () => updateGridSize(5),
       generate70x70: () => updateGridSize(70),
       generate100x100: () => updateGridSize(100),
       visualizeGraphBtn: () => visualizeSelectedAlgorithm(),
@@ -114,21 +109,6 @@ function setupEventListeners() {
       clearGrid(true);
     }
   });
-}
-
-// Update the selected grid size
-function updateGridSize(size) {
-  selectedGridSize = size;
-  generateGrid(size);
-  resetRunningState();
-  markSelectedGridSize();
-}
-
-// Reset running state
-function resetRunningState() {
-  running = "";
-  isAnimating = false;
-  console.log("Running state reset.");
 }
 
 function handleLoginBtn() {
@@ -218,6 +198,7 @@ function updateControls(mode) {
       <button id="clearPathButton">Clear Path</button>
       <button id="visualizeGridButton">Visualize</button>
       <div class="grid-size-buttons">
+        <button id="generate10x10">10 x 10 Grid</button>
         <button id="generate50x50">50 x 50 Grid</button>
         <button id="generate70x70">70 x 70 Grid</button>
         <button id="generate100x100">100 x 100 Grid</button>

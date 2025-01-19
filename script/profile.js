@@ -43,10 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       deleteButtons.forEach((button) => {
         button.addEventListener("click", async (e) => {
           const mazeId = e.target.getAttribute("data-maze-id");
-          console.log(
-            `Dummy delete function called for maze with ID: ${mazeId}`,
-          );
-          alert("Dummy delete: Maze deletion simulated!");
+          await deleteMaze(mazeId);
         });
       });
 
@@ -55,8 +52,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       loadButtons.forEach((button) => {
         button.addEventListener("click", async (e) => {
           const mazeId = e.target.getAttribute("data-maze-id");
-          console.log(`Dummy load function called for maze with ID: ${mazeId}`);
-          alert("Dummy load: Maze loading simulated!");
+          try {
+            await fetchMaze(mazeId);
+          } catch (error) {}
         });
       });
     } else {
@@ -68,15 +66,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     userMazesContainer.innerHTML = `<p>An error occurred. Please try again.</p>`;
   }
 });
-
-// Dummy function to simulate maze deletion
-async function deleteMaze(mazeId) {
-  console.log(`Deleting maze with ID: ${mazeId}`);
-  alert("Maze deleted (dummy function).");
-}
-
-// Dummy function to simulate loading a maze
-async function loadMaze(mazeId) {
-  console.log(`Loading maze with ID: ${mazeId}`);
-  alert("Maze loaded (dummy function).");
-}

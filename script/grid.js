@@ -1,18 +1,46 @@
 // Refactored generateGrid function
 
-document.addEventListener("DOMContentLoaded", generateGrid);
-
 let cells = [];
 let startCell = null;
 let targetCell = null;
 let grid = null;
 let cellSize = 25;
 
+let selectedGridSize = 70;
+let running = "";
+let isAnimating = false;
+
 let mouseState = {
   isPressed: false, // Is the mouse currently pressed
   action: null, // "drag-start", "drag-target", "add-wall", "remove-wall"
   previousCell: null, // Last cell interacted with (for drag logic)
 };
+
+function updateGridSize(size) {
+  selectedGridSize = size;
+  generateGrid(size);
+  resetRunningState();
+  markSelectedGridSize();
+}
+
+function markSelectedGridSize() {
+  const gridSizeButtons = ["generate50x50", "generate70x70", "generate100x100"];
+  gridSizeButtons.forEach((id) => {
+    const button = document.getElementById(id);
+    if (button) {
+      button.classList.toggle(
+        "active",
+        id === `generate${this.selectedGridSize}x${this.selectedGridSize}`,
+      );
+    }
+  });
+}
+
+function resetRunningState() {
+  running = "";
+  isAnimating = false;
+  console.log("Running state reset.");
+}
 
 function generateGrid(size = 70) {
   const gridContainer = document.querySelector("#workplaceContainer");
@@ -256,4 +284,136 @@ function moveTargetCell(newCell) {
     clearGrid(true); // Clear the grid but keep walls
     visualizeSelectedAlgorithmInRealTime();
   }
+}
+
+async function saveGrid() {
+  if (!mazeHasBeenSaved) {
+    let encodedGrid = cells
+      .map((row) =>
+        row
+          .map((cell) => {
+            if (cell.isStart) return "S";
+            if (cell.isTarget) return "T";
+            if (cell.isWall) return "W";
+            if (cell.weight > 1) return "#";
+            return "0";
+          })
+          .join(""),
+      )
+      .join("");
+
+    console.log("Encoded Grid:", encodedGrid);
+
+    const response = await fetchWithAuth(
+      "http://localhost:4000/api/save-maze",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rows: cells.length,
+          cols: cells[0].length,
+          startNode: { row: startCell.row, col: startCell.row },
+          targetNode: { row: targetCell.row, col: targetCell.row },
+          data: encodedGrid,
+        }),
+      },
+    );
+
+    if (response.ok) {
+      console.log("Grid saved successfully!");
+      mazeHasBeenSaved = true;
+    } else {
+      console.error("Failed to save the grid.");
+    }
+  } else {
+    alert("Change the maze before saving again!");
+  }
+}
+
+async function fetchMaze(mazeId) {
+  try {
+    const response = await fetchWithAuth(
+      `http://localhost:4000/api/load-maze/${mazeId}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to load maze with ID: ${mazeId}`);
+    }
+
+    const mazeData = await response.json();
+
+    localStorage.setItem("mazeData", JSON.stringify(mazeData));
+
+    window.location.href = `index.html`;
+  } catch (error) {
+    console.error("Error loading maze:", error);
+  }
+}
+
+function loadMazeFromData(mazeData) {
+  const { rows, cols, data } = mazeData;
+
+  if (!rows || !cols || !data) {
+    throw new Error("Maze data is incomplete or invalid.");
+  }
+
+  selectedGridSize = rows;
+  generateGrid(rows);
+
+  console.log(data);
+  for (let i = 0; i < cells.length; i++) {
+    for (let j = 0; j < cells[0].length; j++) {
+      const cellIndex = i * cols + j;
+
+      if (j === 0 || j === cells.length) {
+        console.log(
+          `Mapping grid cell (${i}, ${j}) to data index ${cellIndex}`,
+        );
+      }
+      if (cellIndex >= data.length) {
+        console.error(
+          `Index ${cellIndex} out of bounds for data length ${data.length}.`,
+        );
+        continue;
+      }
+
+      const cellType = data[cellIndex];
+      const cell = cells[i][j];
+
+      if (!cell || !cell.htmlRef) {
+        console.error(`Cell at (${i}, ${j}) is undefined.`);
+        continue;
+      }
+
+      cell.htmlRef.classList = "cell"; // Reset cell class
+
+      switch (cellType) {
+        case "S":
+          cell.isStart = true;
+          cell.htmlRef.classList.add("cell-start");
+          startCell = cell;
+          break;
+        case "T":
+          cell.isTarget = true;
+          cell.htmlRef.classList.add("cell-target");
+          targetCell = cell;
+          break;
+        case "W":
+          cell.isWall = true;
+          cell.htmlRef.classList.add("cell-wall");
+          break;
+        case "#":
+          cell.weight = 50;
+          cell.htmlRef.classList.add("cell-weight");
+          break;
+        case "0":
+          cell.isStart = false;
+          cell.isTarget = false;
+          cell.isWall = false;
+          cell.weight = 1;
+          break;
+      }
+    }
+  }
+  mazeHasBeenSaved = true;
 }

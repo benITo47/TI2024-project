@@ -537,6 +537,16 @@ a:hover {
   }
 }
 
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  justify-content: center;
+  text-justify: center;
+  text-align: center;
+}
+
 .profile-info {
   background-color: #f4f4f4;
   padding: 20px;
@@ -546,11 +556,13 @@ a:hover {
 }
 
 #userInfoContainer {
-  margin: 20px;
+  margin: auto;
+  width: 50%;
 }
 
 #userMazesContainer {
-  margin: 20px;
+  margin: auto;
+  width: 50%;
 }
 
 .maze-item {
