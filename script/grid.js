@@ -6,7 +6,7 @@ let targetCell = null;
 let grid = null;
 let cellSize = 25;
 
-let selectedGridSize = 70;
+let selectedGridSize = 75;
 let running = "";
 let isAnimating = false;
 
@@ -24,13 +24,18 @@ function updateGridSize(size) {
 }
 
 function markSelectedGridSize() {
-  const gridSizeButtons = ["generate50x50", "generate70x70", "generate100x100"];
+  const gridSizeButtons = [
+    "generate25x25",
+    "generate50x50",
+    "generate75x75",
+    "generate100x100",
+  ];
   gridSizeButtons.forEach((id) => {
     const button = document.getElementById(id);
     if (button) {
       button.classList.toggle(
         "active",
-        id === `generate${this.selectedGridSize}x${this.selectedGridSize}`,
+        id === `generate${selectedGridSize}x${selectedGridSize}`,
       );
     }
   });
@@ -41,7 +46,7 @@ function resetRunningState() {
   isAnimating = false;
 }
 
-function generateGrid(size = 70) {
+function generateGrid(size = 75) {
   const gridContainer = document.querySelector("#workplaceContainer");
   gridContainer.innerHTML = ""; // Clear previous grid
 

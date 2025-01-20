@@ -88,7 +88,7 @@ function setupEventListeners() {
       visualizeGridButton: () => visualizeSelectedAlgorithm(),
       generate50x50: () => updateGridSize(50),
       generate25x25: () => updateGridSize(25),
-      generate70x70: () => updateGridSize(70),
+      generate75x75: () => updateGridSize(75),
       generate100x100: () => updateGridSize(100),
       visualizeGraphBtn: () => visualizeSelectedAlgorithm(),
     };
@@ -203,13 +203,13 @@ function updateControls(mode) {
       <div class="grid-size-buttons">
         <button id="generate25x25">25 x 25 Grid</button>
         <button id="generate50x50">50 x 50 Grid</button>
-        <button id="generate70x70">70 x 70 Grid</button>
+        <button id="generate75x75">75 x 75 Grid</button>
         <button id="generate100x100">100 x 100 Grid</button>
       </div>
     `;
 
     generateGrid(selectedGridSize);
-    markSelectedGridSize(); // Update grid size indicator
+    markSelectedGridSize();
   } else if (mode === "graph") {
     controlsContainer.innerHTML = `
       <label for="gridAlgorithmSelect">Select Algorithm:</label>
@@ -360,8 +360,9 @@ function toggleControls(disable) {
     "clearGridButton",
     "clearPathButton",
     "visualizeGridButton",
+    "generate25x25",
     "generate50x50",
-    "generate70x70",
+    "generate75x75",
     "generate100x100",
     "visualizeGraphBtn",
   ];
